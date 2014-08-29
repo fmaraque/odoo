@@ -15,7 +15,7 @@ class maquetacion(osv.osv):
         'maquetador_id': fields.integer('Maquetador'),
         'state':fields.selection([('start', 'En Maquetación'), ('send', 'Maquetado'), ('cancel', 'Rechazado')], 'Estado de la maquetación'),
         'comentarios': fields.text('Comentarios'),
-        'versiones_anteriores' : fields.one2many('articulo', 'old_maquetacion_id', 'Versiones anteriores'),
+        'versiones_anteriores' : fields.one2many('articulo', 'old_maquetacion_id', 'Version anterior'),
         'articulo_nombre' : fields.related('articulo_id', 'nombre', string='Nombre', type='text', readonly=True),
         'articulo_descripcion' : fields.related('articulo_id', 'descripcion', string='Descripción', type='text', readonly=True),
         'articulo_seccion' : fields.related('articulo_id', 'seccion_id', string='Sección', type='many2one', relation='seccion', readonly=True),
@@ -42,7 +42,7 @@ class maquetacion(osv.osv):
             context = {}
         res = []
         
-        for record in self.browse(cr, 1, ids, context=context):
+        for record in self.browse(cr, uid, ids, context=context):
             revision_name = record.articulo_nombre
             
             
@@ -50,15 +50,15 @@ class maquetacion(osv.osv):
         return res
     
     def aceptar(self, cr, uid, ids, context=None):
-        maquetacion = self.browse(cr, 1, ids, context)
+        maquetacion = self.browse(cr, uid, ids, context)
         articulo_obj = self.pool.get('articulo')
         d = fields.date.today()
-        articulo_obj.write(cr, 1, maquetacion.articulo_id.id, { 'state' : 'publicable', 'fecha_maq':d})
-        self.write(cr, 1, ids, { 'state' : 'send' })
+        articulo_obj.write(cr, 1, maquetacion.articulo_id.id, { 'state' : 'published', 'fecha_maq':d})
+        self.write(cr, uid, ids, { 'state' : 'send' })
         
         # 2. Mediante el articulo
         autor_user_obj = self.pool.get('res.users')
-        autor_user = autor_user_obj.browse(cr, 1, maquetacion.articulo_id.user_id, context)
+        autor_user = autor_user_obj.browse(cr, uid, maquetacion.articulo_id.user_id, context)
         email_autor = autor_user.login
         estado = "publicable"
         
@@ -75,27 +75,26 @@ class maquetacion(osv.osv):
         
         
     def rechazar(self, cr, uid, ids, context=None):
-        maquetacion = self.browse(cr, 1, ids, context)
+        maquetacion = self.browse(cr, uid, ids, context)
         if maquetacion.observaciones == None:
             raise osv.except_osv(_('Warning!'), _("Es necesario añadir un archivo con las observaciones para rechazar el articulo."))
         else:
-            self.write(cr, 1, ids, { 'state' : 'cancel'})
+            self.write(cr, uid, ids, { 'state' : 'cancel'})
             articulo_obj = self.pool.get('articulo')
-            articulo_id = articulo_obj.search(cr, 1, [('maquetacion_id', '=', maquetacion.id)])
-            articulo = articulo_obj.browse(cr, 1, articulo_id, context)
+            articulo_id = articulo_obj.search(cr, uid, [('maquetacion_id', '=', maquetacion.id)])
+            articulo = articulo_obj.browse(cr, uid, articulo_id, context)
             
             vals = {'seccion_id':maquetacion.seccion_id.id,
                     'archivo':articulo.archivo, 'filename':articulo.filename, 'nombre':articulo.nombre,
                     'tipo_articulo':articulo.tipo_articulo, 'tipo_autor':articulo.tipo_autor,
-                    'palabras_clave':articulo.palabras_clave, 'user_id':1, 'old_maquetacion_id':maquetacion.id,
-                    'state':'version_rechazada'}
+                    'palabras_clave':articulo.palabras_clave, 'user_id':1, 'old_maquetacion_id':maquetacion.id}
             articulo_obj.create(cr, 1, vals, context=None)
             
-            articulo_obj.write(cr, 1, maquetacion.articulo_id.id, { 'state' : 'rechazado_en_maquetacion','archivo_diff_m':None })
+            articulo_obj.write(cr, 1, maquetacion.articulo_id.id, { 'state' : 'cancel_m' })
             
             # 2. Mediante el articulo
             autor_user_obj = self.pool.get('res.users')
-            autor_user = autor_user_obj.browse(cr, 1, maquetacion.articulo_id.user_id, context)
+            autor_user = autor_user_obj.browse(cr, uid, maquetacion.articulo_id.user_id, context)
             email_autor = autor_user.login
             estado = "rechazado por el maquetador de seccion"
             

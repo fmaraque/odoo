@@ -11,10 +11,8 @@ class destaque_articulos(osv.osv):
         'articulo_investigacion': fields.many2one('articulo','Artículo de Investigacion'),  
         'revisor_id': fields.integer('Editor'),
         'numero_id':fields.many2one('numero','Número'), 
-        'numero_nombre' : fields.related('numero_id', 'nombre', string='Numero', type='char', readonly=True),
         'state':fields.selection([('start', 'Pendiente'), ('send', 'Confirmado')], 'Estado del proceso'),
         'seccion_id': fields.many2one('seccion','Sección'), 
-        'seccion_nombre' : fields.related('seccion_id', 'nombre', string='Seccion', type='char', readonly=True),
         }
     
     _defaults = {
@@ -29,7 +27,7 @@ class destaque_articulos(osv.osv):
             context = {}
         res = []
         
-        for record in self.browse(cr, 1, ids, context=context):
+        for record in self.browse(cr, uid, ids, context=context):
             destaque_name = record.numero_id[0].nombre
             
             

@@ -16,7 +16,7 @@ class revision(osv.osv):
         'revisor_id': fields.integer('Editor'),
         'state':fields.selection([('start', 'En Revisión'), ('send', 'Aceptado'), ('cancel', 'Rechazado')], 'Estado de la revisión'),
         'comentarios': fields.text('Comentarios'),
-        'versiones_anteriores' : fields.one2many('articulo', 'old_revision_id','Versiones anteriores'),
+        'versiones_anteriores' : fields.one2many('articulo', 'old_revision_id','Version anterior'),
         'articulo_nombre' : fields.related('articulo_id', 'nombre', string='Nombre', type='text', readonly=True),
         'articulo_descripcion' : fields.related('articulo_id', 'descripcion', string='Descripción', type='text', readonly=True),
         'articulo_seccion' : fields.related('articulo_id', 'seccion_id', string='Sección', type='many2one', relation='seccion',readonly=True),      
@@ -43,7 +43,7 @@ class revision(osv.osv):
             context = {}
         res = []
         
-        for record in self.browse(cr, 1, ids, context=context):
+        for record in self.browse(cr, uid, ids, context=context):
             revision_name = record.articulo_nombre
             
             
@@ -51,18 +51,18 @@ class revision(osv.osv):
         return res
     
     def aceptar(self, cr, uid, ids, context=None):
-        revision = self.browse(cr, 1, ids, context)
-        self.write(cr, 1, ids, { 'state' : 'send' })
+        revision = self.browse(cr, uid, ids, context)
+        self.write(cr, uid, ids, { 'state' : 'send' })
         articulo_obj = self.pool.get('articulo')
         
         maquetador_obj = self.pool.get('maquetador')
-        maquetador_id = maquetador_obj.search(cr, 1, [('seccion_id', '=', revision.seccion_id.id)])
-        maquetador = maquetador_obj.browse(cr, 1, maquetador_id, context)
+        maquetador_id = maquetador_obj.search(cr, uid, [('seccion_id', '=', revision.seccion_id.id)])
+        maquetador = maquetador_obj.browse(cr, uid, maquetador_id, context)
         vals = {'articulo_id':revision.articulo_id.id,'seccion_id':revision.seccion_id.id,'maquetador_id':maquetador[0].user_id.id}
         maquetacion_obj = self.pool.get('maquetacion')
         maquetacion_obj.create(cr, 1, vals,context=None)
-        maquetacion_id = maquetacion_obj.search(cr, 1, [('articulo_id', '=', revision.articulo_id.id)])
-        articulo_obj.write(cr, 1, revision.articulo_id.id, { 'state' : 'maquetando', 'maquetacion_id':maquetacion_id[0] })
+        maquetacion_id = maquetacion_obj.search(cr, uid, [('articulo_id', '=', revision.articulo_id.id)])
+        articulo_obj.write(cr, 1, revision.articulo_id.id, { 'state' : 'editing', 'maquetacion_id':maquetacion_id[0] })
         
         # -------------------------------------------
         #Correo al maquetador de seccion
@@ -88,7 +88,7 @@ class revision(osv.osv):
         # Correo al autor
         #2. Mediante el articulo
         autor_user_obj = self.pool.get('res.users')
-        autor_user = autor_user_obj.browse(cr, 1, revision.articulo_id.user_id, context)
+        autor_user = autor_user_obj.browse(cr, uid, revision.articulo_id.user_id, context)
         email_autor = autor_user.login
         estado = "en maquetacion"
         
@@ -105,26 +105,25 @@ class revision(osv.osv):
         # -------------------------------------------  
         
     def rechazar(self, cr, uid, ids, context=None):
-        revision = self.browse(cr, 1, ids, context)
+        revision = self.browse(cr, uid, ids, context)
         if revision.observaciones == None:
             raise osv.except_osv(_('Warning!'), _("Es necesario añadir un archivo con las observaciones para rechazar el articulo."))
         else:
-            self.write(cr, 1, ids, { 'state' : 'cancel' })
+            self.write(cr, uid, ids, { 'state' : 'cancel' })
             articulo_obj = self.pool.get('articulo') 
-            articulo_id = articulo_obj.search(cr, 1, [('revision_id', '=', revision.id)])
-            articulo = articulo_obj.browse(cr, 1, articulo_id, context)
+            articulo_id = articulo_obj.search(cr, uid, [('revision_id', '=', revision.id)])
+            articulo = articulo_obj.browse(cr, uid, articulo_id, context)
             
             vals = {'seccion_id':revision.seccion_id.id,
                     'archivo':articulo.archivo,'filename':articulo.filename,'nombre':articulo.nombre,
                     'tipo_articulo':articulo.tipo_articulo,'tipo_autor':articulo.tipo_autor,
-                    'palabras_clave':articulo.palabras_clave,'user_id':1,'old_revision_id':revision.id,
-                    'state':'version_rechazada'}
+                    'palabras_clave':articulo.palabras_clave,'user_id':1,'old_revision_id':revision.id}
             articulo_obj.create(cr, 1, vals, context=None)
-            articulo_obj.write(cr, 1, revision.articulo_id.id, { 'state' : 'rechazado_en_revision' ,'archivo_diff':None})
+            articulo_obj.write(cr, 1, revision.articulo_id.id, { 'state' : 'cancel' })
             
             #2. Mediante el articulo
             autor_user_obj = self.pool.get('res.users')
-            autor_user = autor_user_obj.browse(cr, 1, revision.articulo_id.user_id, context)
+            autor_user = autor_user_obj.browse(cr, uid, revision.articulo_id.user_id, context)
             email_autor = autor_user.login
             estado = "rechazado por el editor de seccion"
             

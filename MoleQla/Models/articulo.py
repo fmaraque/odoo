@@ -8,8 +8,8 @@ class articulo(osv.osv):
     
     def _get_autor(self, cr, uid, context=None):
         autor_obj = self.pool.get('autor')
-        autor_id = autor_obj.search(cr, 1, [('user_id', '=', uid)])
-        autor = autor_obj.browse(cr, 1, autor_id, context)
+        autor_id = autor_obj.search(cr, uid, [('user_id', '=', uid)])
+        autor = autor_obj.browse(cr, uid, autor_id, context)
         res = autor.nombre
         return res
 
@@ -17,10 +17,10 @@ class articulo(osv.osv):
     def _set_autor(self, cr, uid, ids, name, args, context=None):
         res = {}
         print "\n\nset function call"  
-        for i in self.browse(cr, 1, ids, context=context):
+        for i in self.browse(cr, uid, ids, context=context):
             autor_obj = self.pool.get('autor')
-            autor_id = autor_obj.search(cr, 1, [('user_id', '=', i.user_id)])
-            autor = autor_obj.browse(cr, 1, autor_id, context)
+            autor_id = autor_obj.search(cr, uid, [('user_id', '=', i.user_id)])
+            autor = autor_obj.browse(cr, uid, autor_id, context)
             res[i.id] = autor.nombre
         return res
         
@@ -39,8 +39,8 @@ class articulo(osv.osv):
         'filename': fields.char('Filename'),
         'user_id': fields.integer('Usuario'),
         'seccion_id': fields.many2one('seccion', 'Sección'),
-        'state':fields.selection([('version_rechazada', 'Version rechazada'),('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'Rechazado'),
-                                  ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado')], 'Estado del Artículo'),
+        'state':fields.selection([('start', 'Borrador'), ('send', 'Enviado'), ('cancel', 'Rechazado'),
+                                  ('editing', 'En Maquetación'), ('cancel_m', 'No Maquetado'), ('published', 'Publicable'), ('impress', 'Publicado')], 'Estado del Artículo'),
         'revision_id': fields.many2one('revision', 'Revision'),
         'revision_observaciones' : fields.related('revision_id', 'observaciones', string='Observaciones', type='binary', readonly=True),
         'revision_comentarios' : fields.related('revision_id', 'comentarios', string='Comentarios', type='text', readonly=True),
@@ -65,7 +65,7 @@ class articulo(osv.osv):
         }
     
     _defaults = {
-                  'state':'borrador',
+                  'state':'start',
                   'autor':_get_autor,
                   'mostrar_tipo_autor_interno':False,
                   'mostrar_asignatura': False,
@@ -107,28 +107,27 @@ class articulo(osv.osv):
             nombre = vals['nombre'] + '.pdf'      
             vals['filename'] = nombre
                        
-        return super(articulo, self).create(cr, 1, vals, context)      
+        return super(articulo, self).create(cr, uid, vals, context)      
         
     
     def enviar(self, cr, uid, ids, context=None):
         estado = ""
-        articulo = self.browse(cr, 1, ids, context)
+        articulo = self.browse(cr, uid, ids, context)
         revision_obj = self.pool.get('revision')
         maquetacion_obj = self.pool.get('maquetacion')
         
         
         #DAO res.users
         user_obj = self.pool.get('res.users')
-        editor_obj = self.pool.get('editor')
-        revisor_id = editor_obj.search(cr, 1, [('seccion_id', '=', articulo.seccion_id.id)])
-        revisor = editor_obj.browse(cr, 1, revisor_id, context)
-        if ((articulo.state) == ('borrador')):
+        if ((articulo.state) == ('start')):
             
-            
+            editor_obj = self.pool.get('editor')
+            revisor_id = editor_obj.search(cr, uid, [('seccion_id', '=', articulo.seccion_id.id)])
+            revisor = editor_obj.browse(cr, uid, revisor_id, context)
             vals = {'articulo_id':ids[0], 'seccion_id':articulo.seccion_id.id, 'revisor_id':revisor[0].user_id.id}
             revision_obj.create(cr, 1, vals, context=None)
-            revision_id = revision_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'enviado' , 'revision_id': revision_id[0]})
+            revision_id = revision_obj.search(cr, uid, [('articulo_id', '=', articulo.id)])
+            self.write(cr, uid, ids, { 'state' : 'send' , 'revision_id': revision_id[0]})
             estado = "enviado"
             
             # -------------------------------------------
@@ -151,60 +150,17 @@ class articulo(osv.osv):
                 print "ERROR: No ha sido posible enviar el correo a"+email_editor
             # -------------------------------------------
             
-        if ((articulo.state) == ('rechazado_en_revision')):
-            revision_id = revision_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'enviado' })
-            revision_obj.write(cr, 1, revision_id, { 'state' : 'start' ,'observaciones':None})
+        if ((articulo.state) == ('cancel')):
+            revision_id = revision_obj.search(cr, uid, [('articulo_id', '=', articulo.id)])
+            self.write(cr, uid, ids, { 'state' : 'send' })
+            revision_obj.write(cr, 1, revision_id, { 'state' : 'start' })
             estado = "enviado"
-            # -------------------------------------------
-            # Correo al editor de seccion
-            #2. Mediante el articulo    
-            # Obtenemos el editor de seccion  
             
-            user_editor = user_obj.browse(cr, 1, revisor.user_id.id, context)
-            email_editor = user_editor.login
-            
-            # Asunto y texto del email
-            asunto = "Reenvio: " + articulo.nombre
-            texto = "El articulo ha sido reenviado."
-            
-            # Se envia el correo
-            correo_obj = self.pool.get('correo') 
-            
-            try:       
-                correo_obj.mail(cr, 1, email_editor, asunto, texto)
-            except:
-                print "ERROR: No ha sido posible enviar el correo a"+email_editor
-            # -------------------------------------------
-            
-        if ((articulo.state) == ('rechazado_en_maquetacion')):
-            maquetacion_id = maquetacion_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'maquetando' })
-            maquetacion_obj.write(cr, 1, maquetacion_id, { 'state' : 'start' ,'observaciones':None})
+        if ((articulo.state) == ('cancel_m')):
+            maquetacion_id = maquetacion_obj.search(cr, uid, [('articulo_id', '=', articulo.id)])
+            self.write(cr, uid, ids, { 'state' : 'editing' })
+            maquetacion_obj.write(cr, 1, maquetacion_id, { 'state' : 'start' })
             estado = "en maquetacion"
-            maquetador_obj = self.pool.get('maquetador')
-            maquetador_id = maquetador_obj.search(cr, 1, [('seccion_id', '=', articulo.seccion_id.id)])
-            maquetador = maquetador_obj.browse(cr, 1, maquetador_id, context)
-            
-            # -------------------------------------------
-            # Correo al editor de seccion
-            #2. Mediante el articulo    
-            # Obtenemos el editor de seccion  
-            user_editor = user_obj.browse(cr, 1, maquetador.user_id.id, context)
-            email_editor = user_editor.login
-            
-            # Asunto y texto del email
-            asunto = "Reenvio: " + articulo.nombre
-            texto = "El articulo ha sido reenviado."
-            
-            # Se envia el correo
-            correo_obj = self.pool.get('correo') 
-            
-            try:       
-                correo_obj.mail(cr, 1, email_editor, asunto, texto)
-            except:
-                print "ERROR: No ha sido posible enviar el correo a"+email_editor
-            # -------------------------------------------
             
         # Obtenemos el correo del autor
         #=======================================================================
@@ -237,7 +193,7 @@ class articulo(osv.osv):
             context = {}
         res = []
         
-        for record in self.browse(cr, 1, ids, context=context):
+        for record in self.browse(cr, uid, ids, context=context):
             articulo_name = record.nombre
             
             

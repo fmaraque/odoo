@@ -9,7 +9,6 @@ class votacion(osv.osv):
     
     _columns = {    
         'numero_id' : fields.many2one('numero','Número',readonly=True),  
-        'numero_nombre' : fields.related('numero_id', 'nombre', string='Numero', type='char', readonly=True),
         'user_id': fields.integer('Usuario'),
         'lineas_votacion_inv': fields.one2many('linea_votacion', 'votacion_inv_id','Artículos'), 
         'lineas_votacion_div': fields.one2many('linea_votacion', 'votacion_div_id','Artículos'),
@@ -28,7 +27,7 @@ class votacion(osv.osv):
             context = {}
         res = []
         
-        for record in self.browse(cr, 1, ids, context=context):
+        for record in self.browse(cr, uid, ids, context=context):
             destaque_name = record.numero_id[0].nombre
             
             
@@ -78,7 +77,7 @@ class votacion(osv.osv):
         elif (puntos_inv <= 6) and (puntos_div > 6):
             raise osv.except_osv(_('Warning!'),_("El numero de maximo para de puntos repartir entre los articulos divulgativos es de 6."))
         else:
-            return super(votacion, self).write(cr, 1, ids, vals, context)
+            return super(votacion, self).write(cr, uid, ids, vals, context)
         
        
 votacion()
