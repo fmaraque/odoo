@@ -3,7 +3,7 @@
 	<name>MoleQla</name>
 	<comment></comment>
 	<projects>
-		<project>Odoo</project>
+		<project>Odoo Server</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
