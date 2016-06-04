@@ -9,8 +9,10 @@
 	            	<group col="4">
 		            	<field name="nombre"></field>
 		            	<field name="apellidos"/>
-		            	<field name="seccion_id"/>
-		            	<field name="user_id"/>		            	
+		            	<!--<field name="seccion_id"/>
+		            	<field name="user_id"/>-->
+				<field name="seccion_id" groups="base.group_erp_manager"/>
+				<field name="user_id" groups="base.group_erp_manager"/>		            	
 	            	</group>
 	            	<group col="2">
 	            		<field name="descripcion" />

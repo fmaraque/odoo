@@ -114,7 +114,7 @@ class numero(osv.osv):
         for seccion in secciones:
             seccion_ = obj_seccion.browse(cr, 1, seccion, context)
             ids_articulos = obj_articulo.search(cr, 1, [('a_publicar', '=', 'TRUE'),('state', '=', 'publicable'), ('seccion_id', '=', seccion_.id)])
-            if len(ids_articulos) > seccion_.max_articulos:
+	    if len(ids_articulos) > seccion_.max_articulos:
                 i = 0
                 for ide in ids_articulos:
                     i = i + 1

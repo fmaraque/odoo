@@ -10,7 +10,8 @@
 		            	<group col="4">
 			            	<field name="nombre"></field>
 			            	<field name="apellidos"></field>
-			            	<field name="user_id"></field>
+			            	<!--<field name="user_id"></field>-->
+					<field name="user_id" groups="base.group_erp_manager"/>
 		            	</group>
 	            	</sheet>
 	            </form>
