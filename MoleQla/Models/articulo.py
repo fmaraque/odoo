@@ -5,6 +5,7 @@ class articulo(osv.osv):
     
     _name = "articulo"
     _description = "Articulo"
+    _inherit = "mail.thread"
     
     def _get_autor(self, cr, uid, context=None):
         autor_obj = self.pool.get('autor')
@@ -37,7 +38,8 @@ class articulo(osv.osv):
         'descripcion': fields.text('Resumen'),
         'palabras_clave': fields.text('Palabras Claves'),
         'filename': fields.char('Filename'),
-        'user_id': fields.integer('Usuario'),
+        'author': fields.many2one('res.partner', 'Author'),
+        'user_id': fields.many2one('Usuario'),
         'seccion_id': fields.many2one('seccion', 'Sección'),
         'state':fields.selection([('version_rechazada', 'Version rechazada'),('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
                                   ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado'),('rechazado_fin', 'Rechazado')], 'Estado del Artículo'),
