@@ -39,7 +39,7 @@ class articulo(osv.osv):
         'palabras_clave': fields.text('Palabras Claves'),
         'filename': fields.char('Filename'),
         'author': fields.many2one('res.partner', 'Author'),
-        'user_id': fields.many2one('Usuario'),
+        'user_id': fields.many2one('res.users'),
         'seccion_id': fields.many2one('seccion', 'Sección'),
         'state':fields.selection([('version_rechazada', 'Version rechazada'),('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
                                   ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado'),('rechazado_fin', 'Rechazado')], 'Estado del Artículo'),
@@ -55,7 +55,7 @@ class articulo(osv.osv):
         'fecha_maq' : fields.date('Fecha de Aceptación'),
         'destacado' : fields.boolean('Destacado'),
         'premiado' : fields.boolean('Premiado'),
-        'autor': fields.function(_set_autor,readonly=True, string='Autor',type='char'),
+        #'autor': fields.function(_set_autor,readonly=True, string='Autor',type='char'),
         'asignatura' : fields.char('Asignatura'),
         'tipo_autor_interno':fields.selection([('libre', 'Libre'), ('asignatura', 'Asignatura')],'Tipo de Autor Interno'),
         'mostrar_tipo_autor_interno' : fields.boolean("Muestra tipo autor interno"),
@@ -69,7 +69,7 @@ class articulo(osv.osv):
     
     _defaults = {
                   'state':'borrador',
-                  'autor':_get_autor,
+                  #'autor':_get_autor,
                   'mostrar_tipo_autor_interno':False,
                   'mostrar_asignatura': False,
                   'filenameDiff':'diferencias.pdf',
