@@ -33,7 +33,7 @@
 							<field name="seccion_id" attrs="{'readonly':[('state','!=','borrador')]}"></field>
 
 							<field name="author"/>
-							<field name="autor" attrs="{'readonly':1}" />
+					
 							<field name="tipo_autor" on_change="onchange_tipo_autor(tipo_autor,context)"
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
 						</group>
