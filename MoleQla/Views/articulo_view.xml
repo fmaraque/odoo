@@ -32,9 +32,9 @@
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
 							<field name="seccion_id" attrs="{'readonly':[('state','!=','borrador')]}"></field>
 
-							<field name="author"/>
-							<field name="autor" attrs="{'readonly':1}" />
-							<field name="tipo_autor" on_change="onchange_tipo_autor(tipo_autor,context)"
+							<field name="user_id" attrs="{'readonly':1}" />
+							<field name="partner_id"/>
+							<field name="tipo_autor"
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
 						</group>
 						
@@ -42,8 +42,7 @@
 							<field name="tipo_articulo"
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
 							<field name="tipo_autor_interno"
-								attrs="{'invisible':[('mostrar_tipo_autor_interno','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"
-								on_change="onchange_tipo_autor_interno(tipo_autor_interno,context)" />
+								attrs="{'invisible':[('mostrar_tipo_autor_interno','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
 							<field name="asignatura"
 								attrs="{'invisible':[('mostrar_asignatura','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
 						</group>

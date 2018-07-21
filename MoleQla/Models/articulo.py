@@ -1,144 +1,92 @@
 # -*- encoding: utf-8 -*-
-from openerp.osv import fields, osv
+from openerp import fields, models, api
 
-class articulo(osv.osv):
+class articulo(models.Model):
     
     _name = "articulo"
     _description = "Articulo"
     _inherit = "mail.thread"
     
-    def _get_autor(self, cr, uid, context=None):
-        autor_obj = self.pool.get('autor')
-        autor_id = autor_obj.search(cr, 1, [('user_id', '=', uid)])
-        autor = autor_obj.browse(cr, 1, autor_id, context)
-        res = autor.nombre
-        return res
+    nombre = fields.Char('Nombre', size=128, required=True)
+    display_name = fields.Char(compute='get_display_name')
+    tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
+    tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
+    archivo = fields.Binary('Archivo', filters='*.pdf"', required=True)
+    descripcion = fields.Text('Resumen')
+    palabras_clave = fields.Text('Palabras Claves')
+    filename = fields.Char('Filename')
+    partner_id = fields.Many2one('res.partner', 'Author', related='user_id.partner_id', readonly=True)
+    user_id = fields.Many2one('res.users', default=lambda self: self.env.user and self.env.user.id or False)
+    seccion_id = fields.Many2one('seccion', 'Sección')
+    state = fields.Selection([('version_rechazada', 'Version rechazada'), ('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
+                              ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado'), ('rechazado_fin', 'Rechazado')]
+                              , 'Estado del Artículo', default='borrador')
+    revision_id = fields.Many2one('revision', 'Revision')
+    revision_observaciones = fields.Binary(related='revision_id.observaciones', string='Observaciones', readonly=True)
+    revision_comentarios = fields.Text(related='revision_id.comentarios', string='Comentarios', readonly=True)
+    maquetacion_id = fields.Many2one('maquetacion', 'Maquetación')
+    maquetacion_observaciones = fields.Binary(related='maquetacion_id.observaciones', string='Observaciones', readonly=True)
+    maquetacion_comentarios = fields.Text(related='maquetacion_id.comentarios', string='Comentarios', readonly=True)
+    old_revision_id = fields.Many2one('revision', 'Revision')
+    old_maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
+    numero_id = fields.Many2one('numero', 'Número')
+    fecha_maq = fields.Date('Fecha de Aceptación')
+    destacado = fields.Boolean('Destacado')
+    premiado = fields.Boolean('Premiado')
+    asignatura = fields.Char('Asignatura')
+    tipo_autor_interno = fields.Selection([('libre', 'Libre'), ('asignatura', 'Asignatura')],'Tipo de Autor Interno')
+    mostrar_tipo_autor_interno = fields.Boolean("Muestra tipo autor interno", compute='get_mostrar_tipo_autor_interno')
+    mostrar_asignatura = fields.Boolean("Muestra asignatura", compute='get_mostrar_asignatura')
+    archivo_diff = fields.Binary('Archivo Diferencias', filters='*.pdf"', help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo")  
+    archivo_diff_m = fields.Binary('Archivo Diferencias', filters='*.pdf"', help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo")      
+    filenameDiff = fields.Char('FilenameDiff', default='diferencias.pdf')
+    filenameObv = fields.Char('FilenameObv', default='observaciones.pdf')
+    a_publicar = fields.Boolean('Aceptado para publicar')
 
+    @api.depends('tipo_autor')
+    @api.one
+    def get_mostrar_tipo_autor_interno(self):
+        self.mostrar_tipo_autor_interno = self.tipo_autor == 'interno'
+    
+    @api.depends('tipo_autor_interno')
+    @api.one
+    def get_mostrar_asignatura(self):
+        self.mostrar_asignatura = self.tipo_autor_interno == 'asignatura'
 
-    def _set_autor(self, cr, uid, ids, name, args, context=None):
-        res = {}
-        print "\n\nset function call"  
-        for i in self.browse(cr, 1, ids, context=context):
-            autor_obj = self.pool.get('autor')
-            autor_id = autor_obj.search(cr, 1, [('user_id', '=', i.user_id)])
-            autor = autor_obj.browse(cr, 1, autor_id, context)
-            res[i.id] = autor.nombre
-        return res
-        
-        
-        
-        
-        
-    
-    _columns = {
-        'nombre' : fields.char('Nombre', size=128, required=True),
-        'tipo_autor':fields.selection([('interno', 'Interno'), ('externo', 'Externo')], 'Tipo de Autor', required=True),
-        'tipo_articulo':fields.selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True),
-        'archivo': fields.binary('Archivo', filters='*.pdf"', required=True),
-        'descripcion': fields.text('Resumen'),
-        'palabras_clave': fields.text('Palabras Claves'),
-        'filename': fields.char('Filename'),
-        'author': fields.many2one('res.partner', 'Author'),
-        'user_id': fields.many2one('Usuario'),
-        'seccion_id': fields.many2one('seccion', 'Sección'),
-        'state':fields.selection([('version_rechazada', 'Version rechazada'),('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
-                                  ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado'),('rechazado_fin', 'Rechazado')], 'Estado del Artículo'),
-        'revision_id': fields.many2one('revision', 'Revision'),
-        'revision_observaciones' : fields.related('revision_id', 'observaciones', string='Observaciones', type='binary', readonly=True),
-        'revision_comentarios' : fields.related('revision_id', 'comentarios', string='Comentarios', type='text', readonly=True),
-        'maquetacion_id': fields.many2one('maquetacion', 'Maquetación'),
-        'maquetacion_observaciones' : fields.related('maquetacion_id', 'observaciones', string='Observaciones', type='binary', readonly=True),
-        'maquetacion_comentarios' : fields.related('maquetacion_id', 'comentarios', string='Comentarios', type='text', readonly=True),
-        'old_revision_id' : fields.many2one('revision', 'Revision'),
-        'old_maquetacion_id' : fields.many2one('maquetacion', 'Maquetacion'),
-        'numero_id' : fields.many2one('numero', 'Número'),
-        'fecha_maq' : fields.date('Fecha de Aceptación'),
-        'destacado' : fields.boolean('Destacado'),
-        'premiado' : fields.boolean('Premiado'),
-        'autor': fields.function(_set_autor,readonly=True, string='Autor',type='char'),
-        'asignatura' : fields.char('Asignatura'),
-        'tipo_autor_interno':fields.selection([('libre', 'Libre'), ('asignatura', 'Asignatura')],'Tipo de Autor Interno'),
-        'mostrar_tipo_autor_interno' : fields.boolean("Muestra tipo autor interno"),
-        'mostrar_asignatura' : fields.boolean("Muestra asignatura"),
-        'archivo_diff' : fields.binary('Archivo Diferencias', filters='*.pdf"', help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo"),  
-        'archivo_diff_m' : fields.binary('Archivo Diferencias', filters='*.pdf"', help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo"),      
-        'filenameDiff': fields.char('FilenameDiff'),
-        'filenameObv': fields.char('FilenameObv'),
-        'a_publicar':fields.boolean('Aceptado para publicar')
-        }
-    
-    _defaults = {
-                  'state':'borrador',
-                  'autor':_get_autor,
-                  'mostrar_tipo_autor_interno':False,
-                  'mostrar_asignatura': False,
-                  'filenameDiff':'diferencias.pdf',
-                  'filenameObv':'observaciones.pdf'
-                  }
-    
-    _order = 'id desc'
-    
-    def onchange_tipo_autor(self, cr, uid, ids,tipo_autor, context=None):
-        val = {}
-        if tipo_autor == 'interno':
-            val = {
-                   'mostrar_tipo_autor_interno':True
-                   }
-        else:
-            val = {
-                   'mostrar_tipo_autor_interno':False
-                   }
-        return {'value' : val}
-    
-    def onchange_tipo_autor_interno(self, cr, uid, ids,tipo_autor_interno, context=None):
-        val = {}
-        if tipo_autor_interno == 'asignatura':
-            val = {
-                   'mostrar_asignatura':True
-                   }
-        else:
-            val = {
-                   'mostrar_asignatura':False
-                   }
-        return {'value' : val}
-
-    def create(self, cr, uid, vals, context=None):
+    @api.model
+    def create(self, vals):
         if 'user_id' in vals.keys():  
             vals['user_id'] = 1
         else:
             vals['user_id'] = uid
             nombre = vals['nombre'] + '.pdf'      
             vals['filename'] = nombre
-                       
-        return super(articulo, self).create(cr, 1, vals, context)      
+        #TODO: Why?
+        return super(articulo, self).sudo().create(vals)      
         
     
-    def enviar(self, cr, uid, ids, context=None):
+    @api.one
+    def enviar(self):
         estado = ""
-        articulo = self.browse(cr, 1, ids, context)
-        revision_obj = self.pool.get('revision')
-        maquetacion_obj = self.pool.get('maquetacion')
-        
+        articulo = self
+        maquetacion_obj = self.env['maquetacion']
         
         #DAO res.users
-        user_obj = self.pool.get('res.users')
-        editor_obj = self.pool.get('editor')
-        revisor_id = editor_obj.search(cr, 1, [('seccion_id', '=', articulo.seccion_id.id)])
-        revisor = editor_obj.browse(cr, 1, revisor_id, context)
-        if ((articulo.state) == ('borrador')):
-            
-            
-            vals = {'articulo_id':ids[0], 'seccion_id':articulo.seccion_id.id, 'revisor_id':revisor[0].user_id.id}
-            revision_obj.create(cr, 1, vals, context=None)
-            revision_id = revision_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'enviado' , 'revision_id': revision_id[0]})
+        user_obj = self.env['res.users']
+        editor_obj = self.env['editor']
+        revision_obj = self.env['revision']
+        revisor = editor_obj.sudo().search([('seccion_id', '=', self.seccion_id.id)])
+        if ((self.state) == ('borrador')):
+            vals = {'articulo_id': self.id, 'seccion_id':self.seccion_id.id, 'revisor_id':revisor.user_id.id}
+            revision = self.env['revision'].sudo().create(vals)
+            self.sudo().write({ 'state' : 'enviado' , 'revision_id': revision.id})
             estado = "enviado"
             
             # -------------------------------------------
             # Correo al editor de seccion
             #2. Mediante el articulo    
             # Obtenemos el editor de seccion  
-            user_editor = user_obj.browse(cr, 1, revisor.user_id.id, context)
+            user_editor = revisor.sudo().user_id
             email_editor = user_editor.login
             
             # Asunto y texto del email
@@ -146,25 +94,25 @@ class articulo(osv.osv):
             texto = "Se ha recibido un nuevo articulo."
             
             # Se envia el correo
-            correo_obj = self.pool.get('correo') 
+            correo_obj = self.env['correo']
             
-            try:       
-                correo_obj.mail(cr, 1, email_editor, asunto, texto)
+            try:
+                correo_obj.sudo().mail(email_editor, asunto, texto)
             except:
-                print "ERROR: No ha sido posible enviar el correo a"+email_editor
+                print "ERROR: No ha sido posible enviar el correo a" + email_editor
             # -------------------------------------------
             
         if ((articulo.state) == ('rechazado_en_revision')):
-            revision_id = revision_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'enviado' })
-            revision_obj.write(cr, 1, revision_id, { 'state' : 'start' ,'observaciones':None})
+            revision = revision_obj.sudo().search([('articulo_id', '=', articulo.id)])
+            self.sudo().write({ 'state' : 'enviado' })
+            revision.sudo().write({ 'state' : 'start' ,'observaciones':None})
             estado = "enviado"
             # -------------------------------------------
             # Correo al editor de seccion
             #2. Mediante el articulo    
             # Obtenemos el editor de seccion  
             
-            user_editor = user_obj.browse(cr, 1, revisor.user_id.id, context)
+            user_editor = revisor.user_id
             email_editor = user_editor.login
             
             # Asunto y texto del email
@@ -172,28 +120,27 @@ class articulo(osv.osv):
             texto = "El articulo ha sido reenviado."
             
             # Se envia el correo
-            correo_obj = self.pool.get('correo') 
+            correo_obj = self.env['correo']
             
             try:       
-                correo_obj.mail(cr, 1, email_editor, asunto, texto)
+                correo_obj.sudo().mail(email_editor, asunto, texto)
             except:
-                print "ERROR: No ha sido posible enviar el correo a"+email_editor
+                print "ERROR: No ha sido posible enviar el correo a" + email_editor
             # -------------------------------------------
             
         if ((articulo.state) == ('rechazado_en_maquetacion')):
-            maquetacion_id = maquetacion_obj.search(cr, 1, [('articulo_id', '=', articulo.id)])
-            self.write(cr, 1, ids, { 'state' : 'maquetando' })
-            maquetacion_obj.write(cr, 1, maquetacion_id, { 'state' : 'start' ,'observaciones':None})
+            maquetacion = maquetacion_obj.sudo().search([('articulo_id', '=', articulo.id)])
+            self.sudo().write({ 'state' : 'maquetando' })
+            maquetacion.sudo().write({ 'state' : 'start' ,'observaciones':None})
             estado = "en maquetacion"
-            maquetador_obj = self.pool.get('maquetador')
-            maquetador_id = maquetador_obj.search(cr, 1, [('seccion_id', '=', articulo.seccion_id.id)])
-            maquetador = maquetador_obj.browse(cr, 1, maquetador_id, context)
+            maquetador_obj = self.env['maquetador']
+            maquetador = maquetador_obj.sudo().search([('seccion_id', '=', articulo.seccion_id.id)])
             
             # -------------------------------------------
             # Correo al editor de seccion
             #2. Mediante el articulo    
             # Obtenemos el editor de seccion  
-            user_editor = user_obj.browse(cr, 1, maquetador.user_id.id, context)
+            user_editor = maquetador.user_id
             email_editor = user_editor.login
             
             # Asunto y texto del email
@@ -201,10 +148,10 @@ class articulo(osv.osv):
             texto = "El articulo ha sido reenviado."
             
             # Se envia el correo
-            correo_obj = self.pool.get('correo') 
+            correo_obj = self.env['correo']
             
             try:       
-                correo_obj.mail(cr, 1, email_editor, asunto, texto)
+                correo_obj.sudo().mail(email_editor, asunto, texto)
             except:
                 print "ERROR: No ha sido posible enviar el correo a"+email_editor
             # -------------------------------------------
@@ -219,7 +166,7 @@ class articulo(osv.osv):
         # -------------------------------------------
         # Correo al autor
         #2. Mediante el articulo        
-        autor_user = user_obj.browse(cr, 1, articulo.user_id, context)
+        autor_user = self.user_id
         email_autor = autor_user.login
         
         # Asunto y texto del email
@@ -227,25 +174,17 @@ class articulo(osv.osv):
         texto = "Su articulo ha sido recibido por el equipo de MoleQla y se encuentra en el estado <b>" + estado + "</b>. En breve recibira mas noticias sobre su estado."
         
         # Se envia el correo
-        correo_obj = self.pool.get('correo')
+        correo_obj = self.env['correo']
         try:        
-            correo_obj.mail(cr, 1, email_autor, asunto, texto)  
+            correo_obj.sudo().mail(email_autor, asunto, texto)  
         except:
             print "ERROR: No ha sido posible enviar el correo a"+email_autor
         # -------------------------------------------
-       
-    def name_get(self, cr, uid, ids, context=None):
-        
-        if context is None:
-            context = {}
-        res = []
-        
-        for record in self.browse(cr, 1, ids, context=context):
-            articulo_name = record.nombre
-            
-            
-            res.append((record.id, articulo_name))
-        return res   
-        
+    
+    @api.depends('nombre')
+    @api.multi
+    def get_display_name(self):
+        for record in self:
+            record.display_name = record.nombre
         
 articulo()
