@@ -58,7 +58,7 @@ class articulo(models.Model):
         if 'user_id' in vals.keys():  
             vals['user_id'] = 1
         else:
-            vals['user_id'] = uid
+            vals['user_id'] = self.env.user.id
             nombre = vals['nombre'] + '.pdf'      
             vals['filename'] = nombre
         #TODO: Why?
@@ -92,10 +92,10 @@ class articulo(models.Model):
             # Asunto y texto del email
             asunto = "Articulo Nuevo " + articulo.nombre
             texto = "Se ha recibido un nuevo articulo."
-            
+
             # Se envia el correo
             correo_obj = self.env['correo']
-            
+
             try:
                 correo_obj.sudo().mail(email_editor, asunto, texto)
             except:
