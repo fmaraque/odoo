@@ -14,7 +14,7 @@
 {
     "name": "moleqla",
     "version": "1.0",
-    "depends": ["base"],
+    "depends": ["base","mail"],
     "author": "R. Rastrero",
     "category": "Moleqla",
     "description": """
