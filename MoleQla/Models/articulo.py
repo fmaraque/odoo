@@ -7,7 +7,7 @@ class articulo(models.Model):
     _description = "Articulo"
     _inherit = "mail.thread"
     
-    nombre = fields.Char('Nombre', size=128, required=True)
+    nombre = fields.Char('Titulo', size=128, required=True)
     display_name = fields.Char(compute='get_display_name')
     tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
     tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
@@ -62,7 +62,7 @@ class articulo(models.Model):
             nombre = vals['nombre'] + '.pdf'      
             vals['filename'] = nombre
         #TODO: Why?
-        return super(articulo, self).sudo().create(vals)      
+        return super(articulo, self).create(vals)      
         
     
     @api.one
