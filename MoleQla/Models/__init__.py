@@ -13,15 +13,7 @@
 #
 ##############################################################################
 
-import autor
-import editor
-import maquetador
 import seccion
 import articulo
 import revision
 import maquetacion
-import numero
-import correo
-import destaque_articulos
-import votacion
-import linea_votacion

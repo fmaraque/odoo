@@ -81,52 +81,14 @@ class articulo(models.Model):
             revision = self.env['revision'].sudo().create(vals)
             self.sudo().write({ 'state' : 'enviado' , 'revision_id': revision.id})
             estado = "enviado"
-            
-            # -------------------------------------------
-            # Correo al editor de seccion
-            #2. Mediante el articulo    
-            # Obtenemos el editor de seccion  
-            user_editor = revisor.sudo().user_id
-            email_editor = user_editor.login
-            
-            # Asunto y texto del email
-            asunto = "Articulo Nuevo " + articulo.nombre
-            texto = "Se ha recibido un nuevo articulo."
-
-            # Se envia el correo
-            correo_obj = self.env['correo']
-
-            try:
-                correo_obj.sudo().mail(email_editor, asunto, texto)
-            except:
-                print "ERROR: No ha sido posible enviar el correo a" + email_editor
-            # -------------------------------------------
+                       
             
         if ((articulo.state) == ('rechazado_en_revision')):
             revision = revision_obj.sudo().search([('articulo_id', '=', articulo.id)])
             self.sudo().write({ 'state' : 'enviado' })
             revision.sudo().write({ 'state' : 'start' ,'observaciones':None})
             estado = "enviado"
-            # -------------------------------------------
-            # Correo al editor de seccion
-            #2. Mediante el articulo    
-            # Obtenemos el editor de seccion  
-            
-            user_editor = revisor.user_id
-            email_editor = user_editor.login
-            
-            # Asunto y texto del email
-            asunto = "Reenvio: " + articulo.nombre
-            texto = "El articulo ha sido reenviado."
-            
-            # Se envia el correo
-            correo_obj = self.env['correo']
-            
-            try:       
-                correo_obj.sudo().mail(email_editor, asunto, texto)
-            except:
-                print "ERROR: No ha sido posible enviar el correo a" + email_editor
-            # -------------------------------------------
+           
             
         if ((articulo.state) == ('rechazado_en_maquetacion')):
             maquetacion = maquetacion_obj.sudo().search([('articulo_id', '=', articulo.id)])
@@ -136,50 +98,7 @@ class articulo(models.Model):
             maquetador_obj = self.env['maquetador']
             maquetador = maquetador_obj.sudo().search([('seccion_id', '=', articulo.seccion_id.id)])
             
-            # -------------------------------------------
-            # Correo al editor de seccion
-            #2. Mediante el articulo    
-            # Obtenemos el editor de seccion  
-            user_editor = maquetador.user_id
-            email_editor = user_editor.login
-            
-            # Asunto y texto del email
-            asunto = "Reenvio: " + articulo.nombre
-            texto = "El articulo ha sido reenviado."
-            
-            # Se envia el correo
-            correo_obj = self.env['correo']
-            
-            try:       
-                correo_obj.sudo().mail(email_editor, asunto, texto)
-            except:
-                print "ERROR: No ha sido posible enviar el correo a"+email_editor
-            # -------------------------------------------
-            
-        # Obtenemos el correo del autor
-        #=======================================================================
-        # #1. Mediante el usurio logado
-        # current_user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
-        # email = current_user.login
-        #=======================================================================
-        
-        # -------------------------------------------
-        # Correo al autor
-        #2. Mediante el articulo        
-        autor_user = self.user_id
-        email_autor = autor_user.login
-        
-        # Asunto y texto del email
-        asunto = "Articulo " + articulo.nombre
-        texto = "Su articulo ha sido recibido por el equipo de MoleQla y se encuentra en el estado <b>" + estado + "</b>. En breve recibira mas noticias sobre su estado."
-        
-        # Se envia el correo
-        correo_obj = self.env['correo']
-        try:        
-            correo_obj.sudo().mail(email_autor, asunto, texto)  
-        except:
-            print "ERROR: No ha sido posible enviar el correo a"+email_autor
-        # -------------------------------------------
+           
     
     @api.depends('nombre')
     @api.multi
