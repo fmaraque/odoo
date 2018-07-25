@@ -12,7 +12,7 @@ class seccion(models.Model):
     descripcion = fields.Char('Descripción', size=128)
     max_articulos = fields.Integer('Número máximo de artículos por número', default =3)
     editor = fields.One2many('editor', 'seccion_id','Editor') 
-    maquetador = fields.One2many('maquetador', 'seccion_id','Maquetador')
+    maquetador = fields.Many2one('maquetador', string='Maquetador')
     
     @api.depends('nombre')
     @api.multi
