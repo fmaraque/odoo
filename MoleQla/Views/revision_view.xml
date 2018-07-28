@@ -77,13 +77,12 @@
 			<field name="res_model">revision</field>
 			<field name="view_id" ref="view_revision_tree" />
 			<field name="view_type">form</field>
-			<field name="view_model">tree,form</field>
+			<field name="view_mode">tree,form</field>
 		</record>
 
 		<!-- Menu -->
 		<menuitem name="Revisiones" id="revisiones_submenu" parent="moleqla_submenu_lateral_jefe"
 			sequence="110" action="act_revision" />
-		<menuitem name="Revisiones" id="revisiones_submenu_seccion"
-			parent="moleqla_submenu_lateral_editor" sequence="90" action="act_revision" />
+		
 	</data>
 </openerp>

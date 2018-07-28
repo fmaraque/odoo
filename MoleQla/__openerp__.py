@@ -22,10 +22,10 @@
     """,
     "init_xml": [],
                   
-    'update_xml': [
+    'data': [
                         'Views/articulo_graph_view.xml',
-                        'Views/seccion_view.xml',
                         'Views/articulo_view.xml',
+                        'Views/seccion_view.xml',                        
                         'Views/revision_view.xml',
                         'Views/maquetacion_view.xml',
                         'Workflows/articulo_workflow.xml',

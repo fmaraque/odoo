@@ -28,8 +28,7 @@ class articulo(models.Model):
     maquetacion_observaciones = fields.Binary(related='maquetacion_id.observaciones', string='Observaciones', readonly=True)
     maquetacion_comentarios = fields.Text(related='maquetacion_id.comentarios', string='Comentarios', readonly=True)
     old_revision_id = fields.Many2one('revision', 'Revision')
-    old_maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
-    numero_id = fields.Many2one('numero', 'Número')
+    old_maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')    
     fecha_maq = fields.Date('Fecha de Aceptación')
     destacado = fields.Boolean('Destacado')
     premiado = fields.Boolean('Premiado')
@@ -73,9 +72,9 @@ class articulo(models.Model):
         
         #DAO res.users
         user_obj = self.env['res.users']
-        editor_obj = self.env['editor']
+        #editor_obj = self.env['Editor']
         revision_obj = self.env['revision']
-        revisor = editor_obj.sudo().search([('seccion_id', '=', self.seccion_id.id)])
+        revisor = revision_obj.sudo().search([('seccion_id', '=', self.seccion_id.id)])
         if ((self.state) == ('borrador')):
             vals = {'articulo_id': self.id, 'seccion_id':self.seccion_id.id, 'revisor_id':revisor.user_id.id}
             revision = self.env['revision'].sudo().create(vals)

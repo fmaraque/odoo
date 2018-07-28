@@ -70,14 +70,12 @@
 			<field name="res_model">maquetacion</field>
 			<field name="view_id" ref="view_maquetacion_tree" />
 			<field name="view_type">form</field>
-			<field name="view_model">tree,form</field>
+			<field name="view_mode">tree,form</field>
 		</record>
 
 		<!-- Menu -->
 		<menuitem name="Maquetaciones" id="maquetaciones_submenu"
 			parent="moleqla_submenu_lateral_jefe" sequence="110" action="act_maquetacion" />
-		<menuitem name="Maquetaciones" id="maquetaciones_submenu_seccion"
-			parent="moleqla_submenu_lateral_maquetador" sequence="90"
-			action="act_maquetacion" />
+		
 	</data>
 </openerp>

@@ -19,7 +19,7 @@
 			<field name="res_model">articulo</field>
 			<field name="view_id" ref="view_graph_articulos" />
 			<field name="view_type">form</field>
-			<field name="view_model">graph</field>
+			<field name="view_mode">graph</field>
 		</record>
 
 		<record model="ir.actions.act_window.view" id="action_stock_move_graph_all">

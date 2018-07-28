@@ -8,7 +8,7 @@ class maquetacion(models.Model):
     _description = "Maquetacion"
     _inherit = "mail.thread"
           
-    articulo_id = fields.Many2one('articulo', 'Artículo')
+    articulo_id = fields.Many2one('articulo', 'Articulo')
     seccion_id = fields.Many2one('seccion', 'Sección')
     observaciones = fields.Binary('Observaciones')
     filenameObv = fields.Char('FilenameObv', default='observaciones.pdf')
@@ -17,11 +17,11 @@ class maquetacion(models.Model):
     state = fields.Selection([('start', 'En Maquetación'), ('send', 'Maquetado'), ('cancel', 'Rechazado')], 'Estado de la maquetación', default='start')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_maquetacion_id', 'Versiones anteriores')
-    articulo_nombre = fields.Text(related='articulo_id.nombre', string='Nombre', readonly=True)
+    articulo_nombre = fields.Char(related='articulo_id.nombre', string='Nombre', readonly=True)
     articulo_descripcion = fields.Text(related='articulo_id.descripcion', string='Descripción', readonly=True)
-    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', codel_name='seccion', readonly=True)
-    articulo_tipoArticulo = fields.Text(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
-    articulo_tipoAutor = fields.Text(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
+    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)
+    articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
+    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
     filenameArt = fields.Char('FilenameObv', default = 'articulo.pdf')
     articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True)
     articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m', string='Archivo Diferencias', readonly=True)
