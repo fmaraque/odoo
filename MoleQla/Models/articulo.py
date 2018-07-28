@@ -54,12 +54,12 @@ class articulo(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'user_id' in vals.keys():  
-            vals['user_id'] = 1
-        else:
-            vals['user_id'] = self.env.user.id
-            nombre = vals['nombre'] + '.pdf'      
-            vals['filename'] = nombre
+       # if 'user_id' in vals.keys():  
+        #    vals['user_id'] = 1
+        #else:
+        vals['user_id'] = self.env.user.id
+        nombre = vals['nombre'] + '.pdf'      
+        vals['filename'] = nombre
         #TODO: Why?
         return super(articulo, self).create(vals)      
         
@@ -74,28 +74,28 @@ class articulo(models.Model):
         user_obj = self.env['res.users']
         #editor_obj = self.env['Editor']
         revision_obj = self.env['revision']
-        revisor = revision_obj.sudo().search([('seccion_id', '=', self.seccion_id.id)])
+        revisor = revision_obj.search([('seccion_id', '=', self.seccion_id.id)])
         if ((self.state) == ('borrador')):
-            vals = {'articulo_id': self.id, 'seccion_id':self.seccion_id.id, 'revisor_id':revisor.user_id.id}
-            revision = self.env['revision'].sudo().create(vals)
-            self.sudo().write({ 'state' : 'enviado' , 'revision_id': revision.id})
+            vals = {'articulo_id': self.id, 'seccion_id':self.seccion_id.id, 'revisor_id':revisor.revisor_id.id}
+            revision = self.env['revision'].create(vals)
+            self.write({ 'state' : 'enviado' , 'revision_id': revision.id})
             estado = "enviado"
                        
             
         if ((articulo.state) == ('rechazado_en_revision')):
-            revision = revision_obj.sudo().search([('articulo_id', '=', articulo.id)])
-            self.sudo().write({ 'state' : 'enviado' })
-            revision.sudo().write({ 'state' : 'start' ,'observaciones':None})
+            revision = revision_obj.search([('articulo_id', '=', articulo.id)])
+            self.write({ 'state' : 'enviado' })
+            revision.write({ 'state' : 'start' ,'observaciones':None})
             estado = "enviado"
            
             
         if ((articulo.state) == ('rechazado_en_maquetacion')):
-            maquetacion = maquetacion_obj.sudo().search([('articulo_id', '=', articulo.id)])
-            self.sudo().write({ 'state' : 'maquetando' })
-            maquetacion.sudo().write({ 'state' : 'start' ,'observaciones':None})
+            maquetacion = maquetacion_obj.search([('articulo_id', '=', articulo.id)])
+            self.write({ 'state' : 'maquetando' })
+            maquetacion.write({ 'state' : 'start' ,'observaciones':None})
             estado = "en maquetacion"
             maquetador_obj = self.env['maquetador']
-            maquetador = maquetador_obj.sudo().search([('seccion_id', '=', articulo.seccion_id.id)])
+            maquetador = maquetador_obj.search([('seccion_id', '=', articulo.seccion_id.id)])
             
            
     

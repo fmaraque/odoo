@@ -4,11 +4,11 @@ from openerp import fields, models, api
 class seccion(models.Model):
     
     _name = "seccion"
-    _rec_name="display_name"
+    #_rec_name="display_name"
     _description = "Seccion"
     _inherit = "mail.thread"
     
-    nombre = fields.Char('Nombre', size=128, required=True)
+    name = fields.Char('Nombre', size=128, required=True)
     display_name = fields.Char(compute='get_display_name')
     descripcion = fields.Char('Descripción', size=128)
     max_articulos = fields.Integer('Número máximo de artículos por número', default =3)
@@ -18,10 +18,10 @@ class seccion(models.Model):
 
     maquetador = fields.Many2one('res.users', string='Maquetador')
     
-    @api.depends('nombre')
+    @api.depends('name')
     @api.multi
     def get_display_name(self):
         for record in self:
-            record.display_name = record.nombre
+            record.display_name = record.name
    
 seccion()
