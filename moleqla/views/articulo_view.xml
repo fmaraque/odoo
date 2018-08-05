@@ -7,28 +7,20 @@
 			<field name="arch" type="xml">
 				<form string="Articulo" version="8.0">
 						<header>
-
-							<button name="to_send" states="borrador" string="Enviar"
-								colspan="1" icon="gtk-apply" />
+							<button name="to_send" states="borrador" string="Enviar"/>
 							<button name="enviar" string="Reenviar"
-								states="rechazado_en_revision,rechazado_en_maquetacion" type="object"
-								icon="gtk-apply" />
-
+								states="rechazado_en_revision,rechazado_en_maquetacion" type="object"/>
 							<field name='state' widget='statusbar'
 								statusbar_visible='borrador,enviado,rechazado_en_revision,maquetando,rechazado_en_maquetacion,publicable,publicado,rechazado_fin'
 								statusbar_colors='{"borrador":"blue","enviado":"yellow", "rechazado_en_revision":"red","maquetando":"orange"
 								, "rechazado_en_maquetacion":"red","publicable":"green","publicado":"purple","rechazado_fin":"purple"}' />
-
-
-
-
 						</header>
 					<sheet>
 						<field name="mostrar_asignatura" invisible='1'></field>
 						<field name="mostrar_tipo_autor_interno" invisible='1'></field>
 						
 						<group col="4">
-							<field name="nombre"
+							<field name="name"
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
 							<field name="seccion_id" attrs="{'readonly':[('state','!=','borrador')]}"></field>
 
@@ -104,12 +96,12 @@
 			<field name="model">articulo</field>
 			<field name="arch" type="xml">
 				<tree string="Articulos">
-					<field name="nombre"></field>
-					<field name="tipo_articulo"></field>
-					<field name="seccion_id"></field>
-					<field name="archivo" filename="filename" />
-					<field name="state" />
-					<field name="premiado" />
+					<field name="name"/>
+					<field name="tipo_articulo"/>
+					<field name="seccion_id"/>
+					<field name="archivo" filename="filename"/>
+					<field name="state"/>
+					<field name="premiado"/>
 				</tree>
 			</field>
 		</record>
@@ -124,10 +116,6 @@
 			<field name="domain">[('state', '!=', 'version_rechazada')]</field>
 		</record>
 
-
-
-
-		 <menuitem name="Articulos" id="articulos_submenu" 
-			sequence="80" action="act_articulo" /> 
+		 <menuitem name="Articulos" id="articulos_submenu" sequence="80" action="act_articulo" parent ="moleqla_submenu_lateral_jefe"/> 
 	</data>
 </openerp>

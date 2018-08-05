@@ -7,8 +7,7 @@ class articulo(models.Model):
     _description = "Articulo"
     _inherit = "mail.thread"
     
-    nombre = fields.Char('Titulo', size=128, required=True)
-    display_name = fields.Char(compute='get_display_name')
+    name = fields.Char('Titulo', size=128, required=True)
     tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
     tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
     archivo = fields.Binary('Archivo', filters='*.pdf"', required=True)
@@ -54,55 +53,26 @@ class articulo(models.Model):
 
     @api.model
     def create(self, vals):
-       # if 'user_id' in vals.keys():  
-        #    vals['user_id'] = 1
-        #else:
-        vals['user_id'] = self.env.user.id
-        nombre = vals['nombre'] + '.pdf'      
-        vals['filename'] = nombre
-        #TODO: Why?
+        vals.update({
+            'user_id': self.env.user.id,
+            'filename': vals['name'] + '.pdf'
+            })
         return super(articulo, self).create(vals)      
-        
-    
+
     @api.one
     def enviar(self):
-        estado = ""
-        articulo = self
-        maquetacion_obj = self.env['maquetacion']
-        
-        #DAO res.users
-        user_obj = self.env['res.users']
-        #editor_obj = self.env['Editor']
-        revision_obj = self.env['revision']
-        revisor = revision_obj.search([('seccion_id', '=', self.seccion_id.id)])
+        revisor = self.env['revision'].search([('seccion_id', '=', self.seccion_id.id)])
         if ((self.state) == ('borrador')):
             vals = {'articulo_id': self.id, 'seccion_id':self.seccion_id.id, 'revisor_id':revisor.revisor_id.id}
             revision = self.env['revision'].create(vals)
             self.write({ 'state' : 'enviado' , 'revision_id': revision.id})
-            estado = "enviado"
-                       
-            
-        if ((articulo.state) == ('rechazado_en_revision')):
-            revision = revision_obj.search([('articulo_id', '=', articulo.id)])
+
+        if ((self.state) == ('rechazado_en_revision')):
+            revision = self.env['revision'].search([('articulo_id', '=', self.id)])
             self.write({ 'state' : 'enviado' })
             revision.write({ 'state' : 'start' ,'observaciones':None})
-            estado = "enviado"
-           
-            
-        if ((articulo.state) == ('rechazado_en_maquetacion')):
-            maquetacion = maquetacion_obj.search([('articulo_id', '=', articulo.id)])
+
+        if ((self.state) == ('rechazado_en_maquetacion')):
+            maquetacion = self.env['maquetacion'].search([('articulo_id', '=', self.id)])
             self.write({ 'state' : 'maquetando' })
             maquetacion.write({ 'state' : 'start' ,'observaciones':None})
-            estado = "en maquetacion"
-            maquetador_obj = self.env['maquetador']
-            maquetador = maquetador_obj.search([('seccion_id', '=', articulo.seccion_id.id)])
-            
-           
-    
-    @api.depends('nombre')
-    @api.multi
-    def get_display_name(self):
-        for record in self:
-            record.display_name = record.nombre
-        
-articulo()

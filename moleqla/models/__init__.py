@@ -13,4 +13,8 @@
 #
 ##############################################################################
 
-import Models
+import seccion
+import articulo
+import revision
+import maquetacion
+import res_users
