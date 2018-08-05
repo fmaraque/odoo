@@ -76,3 +76,7 @@ class articulo(models.Model):
             maquetacion = self.env['maquetacion'].search([('articulo_id', '=', self.id)])
             self.write({ 'state' : 'maquetando' })
             maquetacion.write({ 'state' : 'start' ,'observaciones':None})
+    
+    @api.one
+    def reenviar(self):
+        return self.enviar()

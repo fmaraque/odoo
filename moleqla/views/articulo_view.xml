@@ -7,8 +7,8 @@
 			<field name="arch" type="xml">
 				<form string="Articulo" version="8.0">
 						<header>
-							<button name="to_send" states="borrador" string="Enviar"/>
-							<button name="enviar" string="Reenviar"
+							<button name="enviar" states="borrador" string="Enviar" type="object"/>
+							<button name="reenviar" string="Reenviar"
 								states="rechazado_en_revision,rechazado_en_maquetacion" type="object"/>
 							<field name='state' widget='statusbar'
 								statusbar_visible='borrador,enviado,rechazado_en_revision,maquetando,rechazado_en_maquetacion,publicable,publicado,rechazado_fin'
