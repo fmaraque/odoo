@@ -19,7 +19,7 @@ class articulo(models.Model):
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user and self.env.user.id or False)
     seccion_id = fields.Many2one('seccion', 'Sección')
     state = fields.Selection([('version_rechazada', 'Version rechazada'), ('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
-                              ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'No Maquetado'), ('publicable', 'Publicable'), ('publicado', 'Publicado'), ('rechazado_fin', 'Rechazado')]
+                              ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en Maquetacion'), ('publicable', 'Publicable'), ('publicado', 'Publicado'), ('rechazado_fin', 'Rechazado')]
                               , 'Estado del Artículo', default='borrador')
     revision_id = fields.Many2one('revision', 'Revision')
     revision_observaciones = fields.Binary(related='revision_id.observaciones', string='Observaciones', readonly=True)

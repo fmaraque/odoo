@@ -12,7 +12,7 @@
 									colspan="1" type="object"/>
 								<!--<button name="rechazar_fin" string="Rechazar" states="start"
 									colspan="1" type="object" icon="gtk-cancel" />-->
-								<button name="rechazar" string="Rchazar" states="start"
+								<button name="rechazar" string="Rechazar" states="start"
 									colspan="1" type="object" />
 								<!--<button name="publicarArt" string="Publicar" states="send" 
 										colspan="1" icon="gtk-apply" type="object"/>-->

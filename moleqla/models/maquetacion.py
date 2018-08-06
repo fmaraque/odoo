@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from openerp import fields, models, api
 from openerp.osv import osv
+from openerp.exceptions import ValidationError
 
 class maquetacion(models.Model):
     
@@ -40,7 +41,7 @@ class maquetacion(models.Model):
     @api.one    
     def rechazar(self):
         if self.observaciones == None:
-            raise osv.except_osv(_('Warning!'), _("Es necesario añadir un archivo con las observaciones para rechazar el articulo."))
+            raise ValidationError("Es necesario añadir un archivo con las observaciones para rechazar el articulo.")
         else:
             self.write({ 'state' : 'cancel'})
             vals = {'seccion_id':self.seccion_id.id,

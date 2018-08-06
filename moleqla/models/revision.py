@@ -17,7 +17,7 @@ class revision(models.Model):
     observaciones = fields.Binary('Observaciones')
     filenameObv = fields.Char('FilenameObv', default='observaciones.pdf')  
     revisor_id = fields.Many2one('res.users', 'Editor', domain="[('is_editor', '=', True)]")
-    state = fields.Selection([('start', 'Inicio'), ('send', 'Aceptado'), ('cancel', 'Revisando'),('cancel_2', 'Rechazado'),('published', 'A Publicar')], 'Estado de la revisión', default='start')
+    state = fields.Selection([('start', 'Inicio'), ('send', 'Aceptado'), ('cancel', 'En revision'),('published', 'A Publicar')], 'Estado de la revisión', default='start')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_revision_id','Versiones anteriores')
     articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True)
@@ -27,18 +27,21 @@ class revision(models.Model):
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)      
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
     articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-    filenameArt = fields.Char('FilenameArt', default='articulo.pdf')
+    filenameArt = fields.Char('FilenameArt', default='articulo_id.filename')
     articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True)
     articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff', string='Archivo Diferencias', readonly=True)
     filenameDiff = fields.Char('FilenameDiff', default='diferencias.pdf')
+    maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
 
     @api.one
     def aceptar(self):
-        self.write({ 'state' : 'send' })
+        #self.write({ 'state' : 'send' })
         vals = {'articulo_id': self.articulo_id.id, 'seccion_id': self.seccion_id.id, 'maquetador_id': self.seccion_id.maquetador.id}
         maquetacion = self.env['maquetacion'].create(vals)
         #It doesn't make sense to have articulo referenced in maquatacion and at the same time maquetacion referenced in articulo. But I'll let it be as it was
-        self.articulo_id.write({{'state': 'maquetando', 'maquetacion_id': maquetacion.id}})
+        self.articulo_id.write({'state': 'maquetando', 'maquetacion_id': maquetacion.id})
+        
+        
 
     @api.one
     def rechazar(self):
@@ -68,7 +71,7 @@ class revision(models.Model):
             self.write({ 'state' : 'published'})
             self.articulo_id.write({'a_publicar': True})
         else:
-            raise osv.except_osv(_('Warning!'), _("No se pueden publicar mas articulos de esta seccion en el proximo numero."))
+            raise ValidationError("No se pueden publicar mas articulos de esta seccion en el proximo numero.")
         
     @api.one
     def rechazar_fin(self):
