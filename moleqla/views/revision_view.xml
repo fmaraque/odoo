@@ -8,17 +8,16 @@
 				<form string="Revision" version="8.0">
 					<sheet>
 						<header>				
-								<button name="aceptar" string="Aceptar" states="start"
-									colspan="1" type="object" icon="gtk-apply" />
-								<button name="rechazar_fin" string="Rechazar" states="start"
-									colspan="1" type="object" icon="gtk-cancel" />
-								<button name="rechazar" string="Revisar" states="start"
-									colspan="1" type="object" icon="gtk-cancel" />
+								<button name="aceptar" string="Mandar a maquetar" states="start"
+									colspan="1" type="object"/>
+								<!--<button name="rechazar_fin" string="Rechazar" states="start"
+									colspan="1" type="object" icon="gtk-cancel" />-->
+								<button name="rechazar" string="Rchazar" states="start"
+									colspan="1" type="object" />
 								<!--<button name="publicarArt" string="Publicar" states="send" 
 										colspan="1" icon="gtk-apply" type="object"/>-->
 									
-								<field name='state' widget='statusbar' statusbar_visible='start,cancel,cancel_2,send,published'
-										statusbar_colors='{’start’:’blue’,’cancel’:’orange’,’send’:’yellow’}' />	
+								<field name='state' widget='statusbar'/>	
 						</header>
 
 						<notebook >

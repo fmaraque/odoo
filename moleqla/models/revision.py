@@ -2,6 +2,7 @@
 
 from openerp import fields, models, api
 from openerp.osv import osv
+from openerp.exceptions import ValidationError
 #Once the autor save the articulo and click on Enviar, the articulo status is Send. So if Editor goes to the revision and the artiulo belongs to its section
 # The editor will see the articulo and then he can click on Accept (articulo is going to maquetacion) or in Rechazar (articulo is going back (to Send)
 class revision(models.Model):
@@ -27,7 +28,7 @@ class revision(models.Model):
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
     articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
     filenameArt = fields.Char('FilenameArt', default='articulo.pdf')
-    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True)
+    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True)
     articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff', string='Archivo Diferencias', readonly=True)
     filenameDiff = fields.Char('FilenameDiff', default='diferencias.pdf')
 
@@ -42,7 +43,7 @@ class revision(models.Model):
     @api.one
     def rechazar(self):
         if self.observaciones == None:
-            raise osv.except_osv(_('Warning!'), _("Es necesario añadir un archivo con las observaciones para rechazar el articulo."))
+            raise ValidationError("Es necesario añadir un archivo con las observaciones para rechazar el articulo.")
         else:
             self.write({ 'state' : 'cancel' })
             vals = {'seccion_id':self.seccion_id.id,

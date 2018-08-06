@@ -54,7 +54,7 @@
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
 							<field name="archivo" filename="filename"
 								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
-
+							<field name="filename" invisible="1" />	
 							<field name="archivo_diff" filename="filenameDiff"
 								attrs="{'invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','rechazado_en_maquetacion'),('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')],
 							'required':[('state','=','rechazado_en_revision')]}"></field>

@@ -1,2 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_author_articulo,moleqla.author.articulo,model_articulo,moleqla.group_autor,1,1,1,1
+access_editor_editor,moleqla.editor.articulo,model_revision,moleqla.group_editor,1,1,1,1
+access_maquetador_maquetador,moleqla.maquetador.articulo,model_maquetacion,moleqla.group_maquetador,1,1,1,1
+access_author_section,moleqla.author.section,model_seccion,moleqla.group_autor,1,0,0,0

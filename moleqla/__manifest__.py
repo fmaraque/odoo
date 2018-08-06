@@ -18,7 +18,7 @@
                 "mail",
                 "auth_signup",
                 "website"],
-    "author": "R. Rastrero",
+    "author": "Author",
     "category": "Moleqla",
     "description": """
        ERP Revista
@@ -30,8 +30,7 @@
                 'views/revision_view.xml',
                 'views/maquetacion_view.xml',
                 'security/moleqla_security.xml',
-                'security/ir.model.access.csv',
-                #'Workflows/articulo_workflow.xml',
+                'security/ir.model.access.csv',                
             ],
     'installable': True,
 }

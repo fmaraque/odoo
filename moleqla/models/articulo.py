@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from openerp import fields, models, api
+from openerp.exceptions import ValidationError
 
 class articulo(models.Model):
     
@@ -10,10 +11,10 @@ class articulo(models.Model):
     name = fields.Char('Titulo', size=128, required=True)
     tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
     tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
-    archivo = fields.Binary('Archivo', filters='*.pdf"', required=True)
+    archivo = fields.Binary(string='Archivo PDF', required=True)
     descripcion = fields.Text('Resumen')
     palabras_clave = fields.Text('Palabras Claves')
-    filename = fields.Char('Filename')
+    filename = fields.Char()
     partner_id = fields.Many2one('res.partner', 'Author', related='user_id.partner_id', readonly=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user and self.env.user.id or False)
     seccion_id = fields.Many2one('seccion', 'Sección')
@@ -55,9 +56,21 @@ class articulo(models.Model):
     def create(self, vals):
         vals.update({
             'user_id': self.env.user.id,
-            'filename': vals['name'] + '.pdf'
             })
         return super(articulo, self).create(vals)      
+
+    
+    @api.constrains('filename')
+    def _check_filename(self):
+        if self.archivo:
+            if not self.filename:
+                raise ValidationError("No hay artículo subido")
+            else:
+                # Check the file's extension
+                tmp = self.filename.split('.')
+                ext = tmp[len(tmp)-1]
+                if ext != 'pdf':
+                    raise ValidationError("El artículo de subirse en formato PDF")
 
     @api.one
     def enviar(self):
