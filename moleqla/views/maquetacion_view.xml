@@ -7,8 +7,7 @@
 			<field name="arch" type="xml">
 				<form string="Revision" version="8.0">
 					<sheet>
-						<header>
-								
+						<header>								
 							
 								<button name="aceptar" string="Aceptar" states="start"
 									colspan="1" type="object" />
@@ -32,13 +31,16 @@
 									<field name="articulo_tipoArticulo" />
 									<field name="articulo_tipoAutor" />
 									<field name="articulo_archivo" filename="filenameArt" />
+									<field name="filenameArt" invisible="1"/>									
 									<field name="articulo_archivoDiff_m" filename="filenameDiff" attrs="{'invisible':[('articulo_archivoDiff_m','=',False)]}"/>
+									<field name="filenameDiff" invisible="1"/>
 								</group>
 							</page>
 						
 							<page string="Maquetación">
 								<group col="2">
 									<field name="comentarios" />
+									<field name="filenameObv" invisible="1"/>
 									<field name="observaciones" filename="filenameObv"></field>
 									<field name="versiones_anteriores" attrs="{'readonly':'1'}"></field>
 								</group>

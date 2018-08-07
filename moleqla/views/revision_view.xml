@@ -34,7 +34,9 @@
 									<field name="articulo_tipoArticulo" />
 									<field name="articulo_tipoAutor" />
 									<field name="articulo_archivo" filename="filenameArt" />
+									<field name="filenameArt" invisible="1"/>
 									<field name="articulo_archivoDiff" filename="filenameDiff" attrs="{'invisible':[('articulo_archivoDiff','=',False)]}"/>
+									<field name="filenameDiff" invisible="1"/>
 								</group>
 							</page>
 						
@@ -42,6 +44,7 @@
 								<group col="2">
 									<field name="comentarios" attrs="{'readonly':['|','|',('state','=','send'),('state','=','cancel_2'),('state','=','published')]}"/>
 									<field name="observaciones" filename="filenameObv" attrs="{'readonly':['|','|',('state','=','send'),('state','=','cancel_2'),('state','=','published')]}"></field>
+									<field name="filenameObv" invisible="1"/>
 									<field name="versiones_anteriores" attrs="{'readonly':'1'}"></field>
 								</group>
 

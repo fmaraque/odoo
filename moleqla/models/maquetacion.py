@@ -11,8 +11,9 @@ class maquetacion(models.Model):
           
     articulo_id = fields.Many2one('articulo', 'Articulo')
     seccion_id = fields.Many2one('seccion', 'Sección')
-    observaciones = fields.Binary('Observaciones')
-    filenameObv = fields.Char('FilenameObv', default='observaciones.pdf')
+    observaciones = fields.Binary(string='Observaciones')
+    filenameObv = fields.Char()
+
     
     maquetador_id = fields.Many2one('res.users','Maquetador', domain="[('is_maquetador', '=', True)]")
     state = fields.Selection([('start', 'En Maquetación'), ('send', 'Maquetado'), ('cancel', 'Rechazado')], 'Estado de la maquetación', default='start')
@@ -24,10 +25,17 @@ class maquetacion(models.Model):
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
     articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-    filenameArt = fields.Char('FilenameObv', default = 'articulo.pdf')
+    
+    filenameArt = fields.Char(related='articulo_id.filename')
     articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True)
-    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m', string='Archivo Diferencias', readonly=True)
-    filenameDiff = fields.Char('FilenameDiff', default = 'diferencias.pdf')
+    
+
+
+
+    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m')
+    
+    filenameDiff = fields.Char(related='articulo_id.filenameDiff_m')
+    
     
     @api.one
     @api.depends('articulo_nombre')
@@ -56,3 +64,15 @@ class maquetacion(models.Model):
                     'state':'version_rechazada'}
             self.env['articulo'].create(vals)
             self.articulo_id.write({ 'state' : 'rechazado_en_maquetacion','archivo_diff_m':None })
+
+    @api.constrains('filenameObv')
+    def _check_filename(self):
+        if self.observaciones:
+            if not self.filenameObv:
+                raise ValidationError("No hay artículo subido")
+            else:
+                # Check the file's extension
+                tmp = self.filenameObv.split('.')
+                ext = tmp[len(tmp)-1]
+                if ext != 'pdf':
+                    raise ValidationError("El artículo de subirse en formato PDF")

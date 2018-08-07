@@ -24,7 +24,7 @@
        ERP Revista
     """,
     'data': [
-                #'views/articulo_graph_view.xml',
+                'views/articulo_graph_view.xml',
                 'views/articulo_view.xml',
                 'views/seccion_view.xml',                        
                 'views/revision_view.xml',

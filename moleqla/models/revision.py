@@ -14,8 +14,8 @@ class revision(models.Model):
     articulo_id = fields.Many2one('articulo','Artículo') 
     filename = fields.Char('Filename') 
     seccion_id = fields.Many2one('seccion','Sección')
-    observaciones = fields.Binary('Observaciones')
-    filenameObv = fields.Char('FilenameObv', default='observaciones.pdf')  
+    observaciones = fields.Binary(string='Observaciones')
+    filenameObv = fields.Char()  
     revisor_id = fields.Many2one('res.users', 'Editor', domain="[('is_editor', '=', True)]")
     state = fields.Selection([('start', 'Inicio'), ('send', 'Aceptado'), ('cancel', 'En revision'),('published', 'A Publicar')], 'Estado de la revisión', default='start')
     comentarios = fields.Text('Comentarios')
@@ -27,10 +27,14 @@ class revision(models.Model):
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)      
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
     articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-    filenameArt = fields.Char('FilenameArt', default='articulo_id.filename')
+
+    filenameArt = fields.Char(related='articulo_id.filename')
     articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True)
-    articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff', string='Archivo Diferencias', readonly=True)
-    filenameDiff = fields.Char('FilenameDiff', default='diferencias.pdf')
+
+    articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff')
+    filenameDiff = fields.Char(related='articulo_id.filenameDiff')
+
+
     maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
 
     @api.one
@@ -77,3 +81,15 @@ class revision(models.Model):
     def rechazar_fin(self):
         self.write({ 'state' : 'cancel_2' })              
         revision.articulo_id.write({ 'state' : 'rechazado_fin'})
+
+    @api.constrains('filenameObv')
+    def _check_filename(self):
+        if self.observaciones:
+            if not self.filenameObv:
+                raise ValidationError("No hay artículo subido")
+            else:
+                # Check the file's extension
+                tmp = self.filenameObv.split('.')
+                ext = tmp[len(tmp)-1]
+                if ext != 'pdf':
+                    raise ValidationError("El artículo de subirse en formato PDF")
