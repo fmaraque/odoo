@@ -18,18 +18,13 @@ class articulo(models.Model):
     partner_id = fields.Many2one('res.partner', 'Author', related='user_id.partner_id', readonly=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user and self.env.user.id or False)
     seccion_id = fields.Many2one('seccion', 'Sección')
-    state = fields.Selection([('version_rechazada', 'Version rechazada'), ('borrador', 'Borrador'), ('enviado', 'Enviado'), ('rechazado_en_revision', 'En revision'),
-                              ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en Maquetacion'), ('publicable', 'Publicable'), ('publicado', 'Publicado'), ('rechazado_fin', 'Rechazado')]
+    state = fields.Selection([('borrador', 'Borrador'), ('enviado', 'Enviado a Revision'), ('rechazado_en_revision', 'Rechazado en revision'),
+                              ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en Maquetacion'), ('maquetado', 'Maquetado')]
                               , 'Estado del Artículo', default='borrador')
-    revision_id = fields.Many2one('revision', 'Revision')
-    
+    revision_id = fields.Many2one('revision', 'Revision')    
     revision_observaciones = fields.Binary(related='revision_id.observaciones', string='Observaciones', readonly=True)
     filenameObv = fields.Char(related='revision_id.filenameObv')
-
-
-
     revision_comentarios = fields.Text(related='revision_id.comentarios', string='Comentarios', readonly=True)
-
     maquetacion_id = fields.Many2one('maquetacion', 'Maquetación')
     maquetacion_observaciones = fields.Binary(related='maquetacion_id.observaciones', string='Observaciones', readonly=True)
     maquetacion_comentarios = fields.Text(related='maquetacion_id.comentarios', string='Comentarios', readonly=True)
@@ -42,17 +37,12 @@ class articulo(models.Model):
     tipo_autor_interno = fields.Selection([('libre', 'Libre'), ('asignatura', 'Asignatura')],'Tipo de Autor Interno')
     mostrar_tipo_autor_interno = fields.Boolean("Muestra tipo autor interno", compute='get_mostrar_tipo_autor_interno')
     mostrar_asignatura = fields.Boolean("Muestra asignatura", compute='get_mostrar_asignatura')
-
-    archivo_diff = fields.Binary(string='Articulo PDF Diferencias Revision', required=True, help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo")  
-    filenameDiff = fields.Char()
-
-    
-    archivo_diff_m = fields.Binary('Articulo PDF Diferencias Maquetacion', required=True, help="Este archivo contendrá las diferencias entre la versión antigua y la versión nuevo del artículo")      
+    archivo_diff = fields.Binary(string='Articulo PDF Diferencias Revision', required=True)  
+    filenameDiff = fields.Char()   
+    archivo_diff_m = fields.Binary('Articulo PDF Diferencias Maquetacion', required=True)      
     filenameDiff_m =  fields.Char()
-
-    
-    
     a_publicar = fields.Boolean('Aceptado para publicar')
+
 
     @api.depends('tipo_autor')
     @api.one
@@ -70,7 +60,6 @@ class articulo(models.Model):
             'user_id': self.env.user.id,
             })
         return super(articulo, self).create(vals)      
-
     
     @api.constrains('filename')
     def _check_filename(self):
@@ -122,14 +111,17 @@ class articulo(models.Model):
             self.write({ 'state' : 'enviado' , 'revision_id': revision.id})
 
         if ((self.state) == ('rechazado_en_revision')):
-            revision = self.env['revision'].search([('articulo_id', '=', self.id)])
-            self.write({ 'state' : 'enviado' })
-            revision.write({ 'state' : 'start' ,'observaciones':None})
+            if self.archivo_diff == None:
+                raise ValidationError("Es necesario añadir el articulo modificado.Por favor, edite el artículo y añada un documento.")
+            else:
+                revision = self.env['revision'].search([('articulo_id', '=', self.id)])
+                self.write({ 'state' : 'enviado' })
+                revision.write({ 'state' : 'en_revision' ,'observaciones':None})
 
         if ((self.state) == ('rechazado_en_maquetacion')):
             maquetacion = self.env['maquetacion'].search([('articulo_id', '=', self.id)])
             self.write({ 'state' : 'maquetando' })
-            maquetacion.write({ 'state' : 'start' ,'observaciones':None})
+            maquetacion.write({ 'state' : 'en_maquetacion' ,'observaciones':None})
     
     @api.one
     def reenviar(self):

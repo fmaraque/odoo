@@ -17,7 +17,7 @@ class revision(models.Model):
     observaciones = fields.Binary(string='Observaciones')
     filenameObv = fields.Char()  
     revisor_id = fields.Many2one('res.users', 'Editor', domain="[('is_editor', '=', True)]")
-    state = fields.Selection([('start', 'Inicio'), ('send', 'Aceptado'), ('cancel', 'En revision'),('published', 'A Publicar')], 'Estado de la revisión', default='start')
+    state = fields.Selection([('en_revision', 'En Revision'), ('enviado_a_maquetacion', 'A Maquetacion'), ('rechazado_en_revision', 'Rechazado en revision')], 'Estado de la revisión', default='en_revision')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_revision_id','Versiones anteriores')
     articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True)
@@ -27,32 +27,27 @@ class revision(models.Model):
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)      
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
     articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-
     filenameArt = fields.Char(related='articulo_id.filename')
     articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True)
-
     articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff')
     filenameDiff = fields.Char(related='articulo_id.filenameDiff')
-
-
     maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
 
     @api.one
     def aceptar(self):
-        #self.write({ 'state' : 'send' })
+        self.write({ 'state' : 'enviado_a_maquetacion' })
         vals = {'articulo_id': self.articulo_id.id, 'seccion_id': self.seccion_id.id, 'maquetador_id': self.seccion_id.maquetador.id}
         maquetacion = self.env['maquetacion'].create(vals)
         #It doesn't make sense to have articulo referenced in maquatacion and at the same time maquetacion referenced in articulo. But I'll let it be as it was
-        self.articulo_id.write({'state': 'maquetando', 'maquetacion_id': maquetacion.id})
-        
+        self.articulo_id.write({'state': 'maquetando', 'maquetacion_id': maquetacion.id})        
         
 
     @api.one
     def rechazar(self):
         if self.observaciones == None:
-            raise ValidationError("Es necesario añadir un archivo con las observaciones para rechazar el articulo.")
+            raise ValidationError("Es necesario añadir un documento con las revisiones.Por favor, edite el artículo y añada un documento.")
         else:
-            self.write({ 'state' : 'cancel' })
+            self.write({ 'state' : 'rechazado_en_revision' })
             vals = {'seccion_id':self.seccion_id.id,
                     'archivo': self.articulo_id.archivo,
                     'filename': self.articulo_id.filename,
@@ -62,25 +57,11 @@ class revision(models.Model):
                     'palabras_clave': self.articulo_id.palabras_clave,
                     'user_id':self.env.user.id,
                     'old_revision_id': self.id,
-                    'state':'version_rechazada'
+                    'state':'rechazado_en_revision'
                    }
-            self.env['articulo'].create(vals)
+            #self.env['articulo'].create(vals)
             self.articulo_id.write({ 'state' : 'rechazado_en_revision' ,'archivo_diff':None})
-            
-    @api.one
-    def publicarArt(self):
-        max = self.seccion_id.max_articulos
-        articulos_a_publicar =  self.env['articulo'].search([('seccion_id', '=', self.seccion_id.id), ('a_publicar','=', True), ('state','!=', 'publicado')])
-        if len(articulos_a_publicar)< max:    
-            self.write({ 'state' : 'published'})
-            self.articulo_id.write({'a_publicar': True})
-        else:
-            raise ValidationError("No se pueden publicar mas articulos de esta seccion en el proximo numero.")
-        
-    @api.one
-    def rechazar_fin(self):
-        self.write({ 'state' : 'cancel_2' })              
-        revision.articulo_id.write({ 'state' : 'rechazado_fin'})
+               
 
     @api.constrains('filenameObv')
     def _check_filename(self):

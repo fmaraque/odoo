@@ -8,15 +8,8 @@
 				<form string="Revision" version="8.0">
 					<sheet>
 						<header>				
-								<button name="aceptar" string="Mandar a maquetar" states="start"
-									colspan="1" type="object"/>
-								<!--<button name="rechazar_fin" string="Rechazar" states="start"
-									colspan="1" type="object" icon="gtk-cancel" />-->
-								<button name="rechazar" string="Rechazar" states="start"
-									colspan="1" type="object" />
-								<!--<button name="publicarArt" string="Publicar" states="send" 
-										colspan="1" icon="gtk-apply" type="object"/>-->
-									
+								<button name="aceptar" string="Mandar a maquetar" class="oe_read_only" states="en_revision" colspan="1" type="object"/>
+								<button name="rechazar" string="Rechazar" class="oe_read_only" states="en_revision" colspan="1" type="object" />
 								<field name='state' widget='statusbar'/>	
 						</header>
 
@@ -42,18 +35,13 @@
 						
 							<page string="Revisión">
 								<group col="2">
-									<field name="comentarios" attrs="{'readonly':['|','|',('state','=','send'),('state','=','cancel_2'),('state','=','published')]}"/>
-									<field name="observaciones" filename="filenameObv" attrs="{'readonly':['|','|',('state','=','send'),('state','=','cancel_2'),('state','=','published')]}"></field>
+									<field name="comentarios" attrs="{'readonly':['|','|',('state','=','enviado_a_maquetacion')]}"/>
+									<field name="observaciones" filename="filenameObv" attrs="{'readonly':['|','|',('state','=','enviado_a_maquetacion')]}"></field>
 									<field name="filenameObv" invisible="1"/>
 									<field name="versiones_anteriores" attrs="{'readonly':'1'}"></field>
-								</group>
-
-								
+								</group>								
 							</page>
 						</notebook>
-
-
-
 					</sheet>
 				</form>
 			</field>

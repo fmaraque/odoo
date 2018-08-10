@@ -12,11 +12,9 @@ class maquetacion(models.Model):
     articulo_id = fields.Many2one('articulo', 'Articulo')
     seccion_id = fields.Many2one('seccion', 'Sección')
     observaciones = fields.Binary(string='Observaciones')
-    filenameObv = fields.Char()
-
-    
+    filenameObv = fields.Char()    
     maquetador_id = fields.Many2one('res.users','Maquetador', domain="[('is_maquetador', '=', True)]")
-    state = fields.Selection([('start', 'En Maquetación'), ('send', 'Maquetado'), ('cancel', 'Rechazado')], 'Estado de la maquetación', default='start')
+    state = fields.Selection([('en_maquetacion', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en maquetacion'), ('maquetado', 'Maquetado')], 'Estado de la maquetación', default='en_maquetacion')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_maquetacion_id', 'Versiones anteriores')
     articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True)
@@ -24,16 +22,10 @@ class maquetacion(models.Model):
     articulo_descripcion = fields.Text(related='articulo_id.descripcion', string='Descripción', readonly=True)
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
-    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-    
+    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)    
     filenameArt = fields.Char(related='articulo_id.filename')
-    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True)
-    
-
-
-
-    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m')
-    
+    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True) 
+    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m')    
     filenameDiff = fields.Char(related='articulo_id.filenameDiff_m')
     
     
@@ -44,14 +36,15 @@ class maquetacion(models.Model):
 
     @api.one
     def aceptar(self):
-        self.write({ 'state' : 'send' })       
+        self.write({ 'state' : 'maquetado' })
+        self.articulo_id.write({'state': 'maquetado'})              
                
     @api.one    
     def rechazar(self):
         if self.observaciones == None:
             raise ValidationError("Es necesario añadir un archivo con las observaciones para rechazar el articulo.")
         else:
-            self.write({ 'state' : 'cancel'})
+            self.write({ 'state' : 'rechazado_en_maquetacion'})
             vals = {'seccion_id':self.seccion_id.id,
                     'archivo': self.articulo_id.archivo, 
                     'filename':self.articulo_id.filename, 
@@ -61,8 +54,8 @@ class maquetacion(models.Model):
                     'palabras_clave':self.articulo_id.palabras_clave, 
                     'user_id':self.env.user.id, 
                     'old_maquetacion_id':self.id,
-                    'state':'version_rechazada'}
-            self.env['articulo'].create(vals)
+                    'state':'rechazado_en_maquetacion'}
+            #self.env['articulo'].create(vals)
             self.articulo_id.write({ 'state' : 'rechazado_en_maquetacion','archivo_diff_m':None })
 
     @api.constrains('filenameObv')

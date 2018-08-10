@@ -6,63 +6,61 @@
 			<field name="model">articulo</field>
 			<field name="arch" type="xml">
 				<form string="Articulo" version="8.0">
-						<header>
-							<button name="enviar" states="borrador" string="Enviar" class="oe_read_only" type="object"/>
-							<button name="reenviar" string="Reenviar" class="oe_read_only"
-								states="rechazado_en_revision,rechazado_en_maquetacion" type="object"/>
-							<field name='state' widget='statusbar'
-								statusbar_visible='borrador,enviado,rechazado_en_revision,maquetando,rechazado_en_maquetacion,publicable,publicado,rechazado_fin'
-								statusbar_colors='{"borrador":"blue","enviado":"yellow", "rechazado_en_revision":"red","maquetando":"orange"
-								, "rechazado_en_maquetacion":"red","publicable":"green","publicado":"purple","rechazado_fin":"purple"}' />
-						</header>
 					<sheet>
+						<header>
+							<button name="enviar" states="borrador"  colspan="1" string="Enviar" class="oe_read_only" type="object"/>
+							
+							<button name="reenviar" string="Reenviar" class="oe_read_only" states="rechazado_en_revision,rechazado_en_maquetacion"  colspan="1" type="object"/>
+							
+							<field name='state' widget='statusbar' statusbar_visible='borrador,enviado,rechazado_en_revision,maquetando,rechazado_en_maquetacion,maquetado'	/>
+
+						</header>
+					
 						<field name="mostrar_asignatura" invisible='1'></field>
 						<field name="mostrar_tipo_autor_interno" invisible='1'></field>
 						
 						<group col="4">
 							<field name="name"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
+								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}"></field>
 							<field name="seccion_id" attrs="{'readonly':[('state','!=','borrador')]}"></field>
 
 							<field name="user_id" attrs="{'readonly':1}" />
 							<field name="partner_id"/>
-							<field name="tipo_autor"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
+							<field name="tipo_autor" attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}" />
 						</group>
 						
 						<group col="6">
-							<field name="tipo_articulo"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
-							<field name="tipo_autor_interno"
-								attrs="{'invisible':[('mostrar_tipo_autor_interno','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
-							<field name="asignatura"
-								attrs="{'invisible':[('mostrar_asignatura','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
+							<field name="tipo_articulo"	attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}"></field>
+
+							<field name="tipo_autor_interno" attrs="{'invisible':[('mostrar_tipo_autor_interno','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}" />
+
+							<field name="asignatura" attrs="{'invisible':[('mostrar_asignatura','=', False)],'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}"></field>
 						</group>
 
 
 						<group col="4">
-							<field name="destacado"
-								attrs="{'readonly':'1','invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','enviado'),('state','=','rechazado_en_revision'),('state','=','maquetando'),('state','=','rechazado_en_maquetacion'),('state','=','publicable')]}" />
-							<field name="premiado"
-								attrs="{'readonly':'1','invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','enviado'),('state','=','rechazado_en_revision'),('state','=','maquetando'),('state','=','rechazado_en_maquetacion'),('state','=','publicable')]}" />
+							<field name="destacado" attrs="{'readonly':'1','invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','enviado'),
+								('state','=','rechazado_en_revision'),('state','=','maquetando'),('state','=','rechazado_en_maquetacion')]}" />
+
+							<field name="premiado" attrs="{'readonly':'1','invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','enviado'),('state','=','rechazado_en_revision'),('state','=','maquetando'),('state','=','rechazado_en_maquetacion')]}" />
 						</group>
 
 						<group col="2">
-							<field name="descripcion"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}"></field>
-							<field name="palabras_clave"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
+							<field name="descripcion" attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}"></field>
+
+							<field name="palabras_clave" attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}" />
+
 							<field name="archivo" filename="filename"
-								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')]}" />
+								attrs="{'readonly':['|','|','|',('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')]}" />
 							<field name="filename" invisible="1" />	
 							<field name="filenameDiff" invisible="1" />
 							<field name="filenameDiff_m" invisible="1" />
+
 							<field name="archivo_diff" filename="filenameDiff"
-								attrs="{'invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','rechazado_en_maquetacion'),('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')],
-							'required':[('state','=','rechazado_en_revision')]}"></field>
+								attrs="{'invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','rechazado_en_maquetacion'),('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')],'required':[('state','=','rechazado_en_revision')]}"></field>
+
 							<field name="archivo_diff_m" filename="filenameDiff_m"
-								attrs="{'invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','rechazado_en_revision'),('state','=','enviado'),('state','=','maquetando'),('state','=','publicable'),('state','=','publicado')],
-							'required':[('state','=','rechazado_en_maquetacion')]}"></field>
+								attrs="{'invisible':['|','|','|','|','|',('state','=','borrador'),('state','=','rechazado_en_revision'),('state','=','enviado'),('state','=','maquetando'),('state','=','maquetado')],'required':[('state','=','rechazado_en_maquetacion')]}"></field>
 
 						</group>
 						<notebook>
