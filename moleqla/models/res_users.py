@@ -7,6 +7,8 @@ class ResUsers(models.Model):
     is_autor = fields.Boolean(compute='get_moleqla_access', store=True)
     is_editor = fields.Boolean(compute='get_moleqla_access', store=True)
     is_maquetador = fields.Boolean(compute='get_moleqla_access', store=True)
+    seccion_editor_ids = fields.Many2many('seccion')
+    seccion_maquetador_ids = fields.Many2one('seccion', 'maquetador')
 
     @api.one
     @api.depends('groups_id')

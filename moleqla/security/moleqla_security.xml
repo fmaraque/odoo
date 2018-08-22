@@ -26,7 +26,7 @@
 </data>
 
 <!--  Define Access rules here -->
-<data noupdate="1">
+<data noupdate="0">
     <record id="autor_articulo_own" model="ir.rule">
         <field name="name">Author: Own articles only</field>
         <field name="model_id" ref="model_articulo"/>
@@ -41,8 +41,19 @@
     <record id="editor_articulo_seccion" model="ir.rule">
         <field name="name">Editor: Articles in affected seccion</field>
         <field name="model_id" ref="model_articulo"/>
-        <field name="domain_force">[('seccion_id.','=',user.id)]</field>
+        <field name="domain_force">[('seccion_id.editor_ids','=',user.id)]</field>
         <field name="groups" eval="[(4, ref('group_editor'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="maquetador_articulo_seccion" model="ir.rule">
+        <field name="name">Maquetador: Articles in affected seccion</field>
+        <field name="model_id" ref="model_articulo"/>
+        <field name="domain_force">[('seccion_id.maquetador', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_maquetador'))]"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_create" eval="1"/>
         <field name="perm_write" eval="1"/>

@@ -72,7 +72,7 @@
 
 		<!-- Menu -->
 		<menuitem name="Revisiones" id="revisiones_submenu" parent="moleqla_submenu_lateral_jefe"
-			sequence="110" action="act_revision" />
+			groups="moleqla.group_editor" sequence="110" action="act_revision"/>
 		
 	</data>
 </openerp>

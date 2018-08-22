@@ -1,5 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_author_articulo,moleqla.author.articulo,model_articulo,moleqla.group_autor,1,1,1,1
-access_editor_editor,moleqla.editor.articulo,model_revision,moleqla.group_editor,1,1,1,1
-access_maquetador_maquetador,moleqla.maquetador.articulo,model_maquetacion,moleqla.group_maquetador,1,1,1,1
-access_author_section,moleqla.author.section,model_seccion,moleqla.group_autor,1,0,0,0
+access_autor_articulo,moleqla.autor.articulo,model_articulo,moleqla.group_autor,1,1,1,1
+
+access_autor_seccion,moleqla.autor.seccion,model_seccion,moleqla.group_autor,1,0,0,0
+access_manager_seccion,moleqla.manager.seccion,model_seccion,base.group_erp_manager,1,1,1,1
+
+access_autor_revision,moleqla.autor.revision,model_revision,moleqla.group_autor,1,0,1,0
+access_editor_revision,moleqla.editor.revision,model_revision,moleqla.group_editor,1,1,1,1
+
+access_autor_maquetacion,moleqla.autor.maquetacion,model_maquetacion,moleqla.group_autor,1,0,1,0
+access_maquetador_maquetacion,moleqla.maquetador.maquetacion,model_maquetacion,moleqla.group_maquetador,1,1,1,1
