@@ -1,11 +1,17 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_autor_articulo,moleqla.autor.articulo,model_articulo,moleqla.group_autor,1,1,1,1
+access_editor_articulo,moleqla.editor.articulo,model_articulo,moleqla.group_editor,1,1,0,0
+access_maquetador_articulo,moleqla.maquetador.articulo,model_articulo,moleqla.group_maquetador,1,0,0,0
 
 access_autor_seccion,moleqla.autor.seccion,model_seccion,moleqla.group_autor,1,0,0,0
+access_editor_seccion,moleqla.editor.seccion,model_seccion,moleqla.group_editor,1,0,0,0
+access_maquetador_seccion,moleqla.maquetador.seccion,model_seccion,moleqla.group_maquetador,1,0,0,0
 access_manager_seccion,moleqla.manager.seccion,model_seccion,base.group_erp_manager,1,1,1,1
 
 access_autor_revision,moleqla.autor.revision,model_revision,moleqla.group_autor,1,0,1,0
 access_editor_revision,moleqla.editor.revision,model_revision,moleqla.group_editor,1,1,1,1
+access_maquetador_revision,moleqla.maquetador.revision,model_revision,moleqla.group_maquetador,1,0,0,0
 
-access_autor_maquetacion,moleqla.autor.maquetacion,model_maquetacion,moleqla.group_autor,1,0,1,0
+access_autor_maquetacion,moleqla.autor.maquetacion,model_maquetacion,moleqla.group_autor,1,1,0,0
+access_editor_maquetacion,moleqla.editor.maquetacion,model_maquetacion,moleqla.group_editor,1,0,0,0
 access_maquetador_maquetacion,moleqla.maquetador.maquetacion,model_maquetacion,moleqla.group_maquetador,1,1,1,1
