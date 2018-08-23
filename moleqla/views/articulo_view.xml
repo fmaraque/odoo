@@ -114,6 +114,6 @@
 		</record>
 
 		 <menuitem name="Articulos" id="articulos_submenu" groups="moleqla.group_autor"
-		 	sequence="80" action="act_articulo" parent ="moleqla_submenu_lateral_jefe"/> 
+		 	sequence="80" action="act_articulo" parent ="moleqla_submenu_jefe"/> 
 	</data>
 </openerp>

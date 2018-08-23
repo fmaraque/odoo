@@ -71,7 +71,7 @@
 
 		<!-- Menu -->
 		<menuitem name="Maquetaciones" id="maquetaciones_submenu" groups="moleqla.group_maquetador"
-			parent="moleqla_submenu_lateral_jefe" sequence="110" action="act_maquetacion" />
+			parent="moleqla_submenu_jefe" sequence="110" action="act_maquetacion" />
 		
 	</data>
 </openerp>
