@@ -19,7 +19,6 @@ class maquetacion(models.Model):
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_maquetacion_id', 'Versiones anteriores')
     articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True, store=True)
-    display_name = fields.Char(compute='get_display_name')
     articulo_descripcion = fields.Text(related='articulo_id.descripcion', string='Descripción', readonly=True, store=True)
     articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True, store=True)
     articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True, store=True)

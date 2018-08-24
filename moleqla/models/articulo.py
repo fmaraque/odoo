@@ -8,7 +8,7 @@ class articulo(models.Model):
     _description = "Articulo"
     _inherit = "mail.thread"
     
-    name = fields.Char('Titulo', size=128, required=True)
+    name = fields.Char('Titulo', size=128, required=True, readonly=True, states={'borrador': [('readonly', False)]})
     tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
     tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
     archivo = fields.Binary(string='Articulo PDF', required=True)
