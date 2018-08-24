@@ -8,7 +8,8 @@ class maquetacion(models.Model):
     _name = "maquetacion"
     _description = "Maquetacion"
     _inherit = "mail.thread"
-          
+    _rec_name = "articulo_nombre"
+
     articulo_id = fields.Many2one('articulo', 'Articulo')
     seccion_id = fields.Many2one('seccion', 'Sección')
     observaciones = fields.Binary(string='Observaciones')
@@ -17,22 +18,16 @@ class maquetacion(models.Model):
     state = fields.Selection([('en_maquetacion', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en maquetacion'), ('maquetado', 'Maquetado')], 'Estado de la maquetación', default='en_maquetacion')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_maquetacion_id', 'Versiones anteriores')
-    articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True)
+    articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True, store=True)
     display_name = fields.Char(compute='get_display_name')
-    articulo_descripcion = fields.Text(related='articulo_id.descripcion', string='Descripción', readonly=True)
-    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)
-    articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
-    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)    
-    filenameArt = fields.Char(related='articulo_id.filename')
-    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True) 
-    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m')    
-    filenameDiff = fields.Char(related='articulo_id.filenameDiff_m')
-    
-    
-    @api.one
-    @api.depends('articulo_nombre')
-    def get_display_name(self):
-        self.display_name = self.articulo_nombre
+    articulo_descripcion = fields.Text(related='articulo_id.descripcion', string='Descripción', readonly=True, store=True)
+    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True, store=True)
+    articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True, store=True)
+    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True, store=True)    
+    filenameArt = fields.Char(related='articulo_id.filename', store=True)
+    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Archivo', readonly=True, store=True) 
+    articulo_archivoDiff_m = fields.Binary(related='articulo_id.archivo_diff_m', store=True)    
+    filenameDiff = fields.Char(related='articulo_id.filenameDiff_m', store=True)
 
     @api.one
     def aceptar(self):
