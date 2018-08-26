@@ -31,7 +31,7 @@
 
 		<!-- Menu -->
 		<menuitem id="moleqla_submenu_jefe" name="Moleqla"/>	
-		<menuitem name="Dashboard" id="articulos_submenu_seccion_graph"
+		<menuitem name="Dashboard" id="articulos_submenu_seccion_graph" groups="base.group_erp_manager"
 			parent="moleqla_submenu_jefe" sequence="11" action="act_dashboard" />
 	</data>
 </openerp>
