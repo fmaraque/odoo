@@ -16,17 +16,15 @@
     <record id="group_editor" model="res.groups">
         <field name="name">Editor</field>
         <field name="category_id" ref="moleqla.module_moleqla_security"/>
-        <field name="implied_ids" eval="[(4, ref('moleqla.group_autor'))]"/>
     </record>
     <record id="group_maquetador" model="res.groups">
         <field name="name">Maquetador</field>
         <field name="category_id" ref="moleqla.module_moleqla_security"/>
-        <field name="implied_ids" eval="[(4, ref('moleqla.group_editor'))]"/>
     </record>
 </data>
 
 <!--  Define Access rules here -->
-<data noupdate="1">
+<data noupdate="0">
     <record id="autor_articulo_own" model="ir.rule">
         <field name="name">Author: Own articles only</field>
         <field name="model_id" ref="model_articulo"/>
@@ -39,10 +37,21 @@
     </record>
 
     <record id="editor_articulo_seccion" model="ir.rule">
-        <field name="name">Editor: Articles in affected seccion</field>
-        <field name="model_id" ref="model_articulo"/>
-        <field name="domain_force">[('seccion_id.','=',user.id)]</field>
+        <field name="name">Editor: Revisions in affected seccion</field>
+        <field name="model_id" ref="model_revision"/>
+        <field name="domain_force">[('seccion_id.editor_ids','=',user.id)]</field>
         <field name="groups" eval="[(4, ref('group_editor'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="maquetador_articulo_seccion" model="ir.rule">
+        <field name="name">Maquetador: Maquetaccions in affected seccion</field>
+        <field name="model_id" ref="model_maquetacion"/>
+        <field name="domain_force">[('seccion_id.maquetador', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_maquetador'))]"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_create" eval="1"/>
         <field name="perm_write" eval="1"/>

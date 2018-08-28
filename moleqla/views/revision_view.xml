@@ -5,14 +5,13 @@
 			<field name="name">Revision</field>
 			<field name="model">revision</field>
 			<field name="arch" type="xml">
-				<form string="Revision" version="8.0">
+				<form>
+					<header>				
+							<button name="aceptar" string="Mandar a maquetar" class="oe_read_only" states="en_revision" colspan="1" type="object"/>
+							<button name="rechazar" string="Rechazar" class="oe_read_only" states="en_revision" colspan="1" type="object" />
+							<field name='state' widget='statusbar'/>	
+					</header>
 					<sheet>
-						<header>				
-								<button name="aceptar" string="Mandar a maquetar" class="oe_read_only" states="en_revision" colspan="1" type="object"/>
-								<button name="rechazar" string="Rechazar" class="oe_read_only" states="en_revision" colspan="1" type="object" />
-								<field name='state' widget='statusbar'/>	
-						</header>
-
 						<notebook >
 							<page string="Artículo" attrs="{'readonly':'1'}">
 								<group col="4">
@@ -71,8 +70,8 @@
 		</record>
 
 		<!-- Menu -->
-		<menuitem name="Revisiones" id="revisiones_submenu" parent="moleqla_submenu_lateral_jefe"
-			sequence="110" action="act_revision" />
+		<menuitem name="Revisiones" id="revisiones_submenu" parent="moleqla_submenu_jefe"
+			groups="moleqla.group_editor" sequence="110" action="act_revision"/>
 		
 	</data>
 </openerp>

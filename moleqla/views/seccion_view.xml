@@ -37,9 +37,9 @@
                 <field name="view_type">form</field>
                 <field name="view_mode">tree,form</field>
             </record>
-        
+
         <!-- Menu -->
-            
-            <menuitem name="Secciones" id="secciones_submenu" parent="moleqla_submenu_lateral_jefe" sequence="100" action="act_seccion"/>
+        <menuitem name="Secciones" id="secciones_submenu" groups="base.group_erp_manager"
+        	parent="moleqla_submenu_jefe" sequence="100" action="act_seccion"/>
     </data>
 </openerp>

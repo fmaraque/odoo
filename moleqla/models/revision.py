@@ -10,7 +10,8 @@ class revision(models.Model):
     _name = "revision"
     _description = "Revision"
     _inherit = "mail.thread"
-        
+    _rec_name = "articulo_nombre"
+    
     articulo_id = fields.Many2one('articulo','Artículo') 
     filename = fields.Char('Filename') 
     seccion_id = fields.Many2one('seccion','Sección')
@@ -20,17 +21,17 @@ class revision(models.Model):
     state = fields.Selection([('en_revision', 'En Revision'), ('enviado_a_maquetacion', 'A Maquetacion'), ('rechazado_en_revision', 'Rechazado en revision')], 'Estado de la revisión', default='en_revision')
     comentarios = fields.Text('Comentarios')
     versiones_anteriores = fields.One2many('articulo', 'old_revision_id','Versiones anteriores')
-    articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True)
-    articulo_estado = fields.Selection(related='articulo_id.state', string='Estado del artículo', readonly=True)
-    articulo_a_publicar = fields.Boolean(related='articulo_id.a_publicar', string='Artículo a publicar', type='boolean', readonly=True)
-    articulo_descripcion = fields.Text(related = 'articulo_id.descripcion', string='Descripción', readonly=True)
-    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True)      
-    articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True)
-    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True)
-    filenameArt = fields.Char(related='articulo_id.filename')
-    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True)
-    articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff')
-    filenameDiff = fields.Char(related='articulo_id.filenameDiff')
+    articulo_nombre = fields.Char(related='articulo_id.name', string='Nombre', readonly=True, store=True)
+    articulo_estado = fields.Selection(related='articulo_id.state', string='Estado del artículo', readonly=True, store=True)
+    articulo_a_publicar = fields.Boolean(related='articulo_id.a_publicar', string='Artículo a publicar', type='boolean', readonly=True, store=True)
+    articulo_descripcion = fields.Text(related = 'articulo_id.descripcion', string='Descripción', readonly=True, store=True)
+    articulo_seccion = fields.Many2one(related='articulo_id.seccion_id', string='Sección', comodel_name='seccion', readonly=True, store=True)      
+    articulo_tipoArticulo = fields.Selection(related='articulo_id.tipo_articulo', string='Tipo Artículo', readonly=True, store=True)
+    articulo_tipoAutor = fields.Selection(related='articulo_id.tipo_autor', string='Tipo Autor', readonly=True, store=True)
+    filenameArt = fields.Char(related='articulo_id.filename', store=True)
+    articulo_archivo = fields.Binary(related='articulo_id.archivo', string='Articulo', readonly=True, store=True)
+    articulo_archivoDiff = fields.Binary(related='articulo_id.archivo_diff', store=True)
+    filenameDiff = fields.Char(related='articulo_id.filenameDiff', store=True)
     maquetacion_id = fields.Many2one('maquetacion', 'Maquetacion')
 
     @api.one

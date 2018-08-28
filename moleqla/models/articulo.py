@@ -8,7 +8,7 @@ class articulo(models.Model):
     _description = "Articulo"
     _inherit = "mail.thread"
     
-    name = fields.Char('Titulo', size=128, required=True)
+    name = fields.Char('Titulo', size=128, required=True, readonly=True, states={'borrador': [('readonly', False)]})
     tipo_autor = fields.Selection([('interno', 'Interno'), ('externo', 'Externo')], string='Tipo de Autor', required=True)
     tipo_articulo = fields.Selection([('divulgativo', 'Divulgativo'), ('investigacion', 'Investigación')], 'Tipo de Artículo', required=True)
     archivo = fields.Binary(string='Articulo PDF', required=True)
@@ -16,7 +16,7 @@ class articulo(models.Model):
     descripcion = fields.Text('Resumen')
     palabras_clave = fields.Text('Palabras Claves')    
     partner_id = fields.Many2one('res.partner', 'Author', related='user_id.partner_id', readonly=True)
-    user_id = fields.Many2one('res.users', default=lambda self: self.env.user and self.env.user.id or False)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user and self.env.user.id or False)
     seccion_id = fields.Many2one('seccion', 'Sección')
     state = fields.Selection([('borrador', 'Borrador'), ('enviado', 'Enviado a Revision'), ('rechazado_en_revision', 'Rechazado en revision'),
                               ('maquetando', 'En Maquetación'), ('rechazado_en_maquetacion', 'Rechazado en Maquetacion'), ('maquetado', 'Maquetado')]
@@ -37,9 +37,9 @@ class articulo(models.Model):
     tipo_autor_interno = fields.Selection([('libre', 'Libre'), ('asignatura', 'Asignatura')],'Tipo de Autor Interno')
     mostrar_tipo_autor_interno = fields.Boolean("Muestra tipo autor interno", compute='get_mostrar_tipo_autor_interno')
     mostrar_asignatura = fields.Boolean("Muestra asignatura", compute='get_mostrar_asignatura')
-    archivo_diff = fields.Binary(string='Articulo PDF Diferencias Revision', required=True)  
-    filenameDiff = fields.Char()   
-    archivo_diff_m = fields.Binary('Articulo PDF Diferencias Maquetacion', required=True)      
+    archivo_diff = fields.Binary(string='Articulo PDF Diferencias Revision')  
+    filenameDiff = fields.Char()
+    archivo_diff_m = fields.Binary('Articulo PDF Diferencias Maquetacion')      
     filenameDiff_m =  fields.Char()
     a_publicar = fields.Boolean('Aceptado para publicar')
 
@@ -62,6 +62,7 @@ class articulo(models.Model):
         return super(articulo, self).create(vals)      
     
     @api.constrains('filename')
+    @api.one
     def _check_filename(self):
         if self.archivo:
             if not self.filename:
@@ -75,6 +76,7 @@ class articulo(models.Model):
 
 
     @api.constrains('filenameDiff')
+    @api.one
     def _check_filename(self):
         if self.archivo_diff:
             if not self.filenameDiff:
@@ -88,6 +90,7 @@ class articulo(models.Model):
 
     
     @api.constrains('filenameDiff_m')
+    @api.one
     def _check_filename(self):
         if self.archivo_diff_m:
             if not self.filenameDiff_m:

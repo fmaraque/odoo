@@ -24,13 +24,13 @@
        ERP Revista
     """,
     'data': [
+                'security/moleqla_security.xml',
+                'security/ir.model.access.csv',                
                 'views/articulo_graph_view.xml',
                 'views/articulo_view.xml',
                 'views/seccion_view.xml',                        
                 'views/revision_view.xml',
                 'views/maquetacion_view.xml',
-                'security/moleqla_security.xml',
-                'security/ir.model.access.csv',                
             ],
     'installable': True,
 }
