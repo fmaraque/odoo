@@ -61,8 +61,7 @@ class articulo(models.Model):
             })
         return super(articulo, self).create(vals)      
     
-    @api.constrains('filename')
-    @api.one
+    @api.constrains('filename')   
     def _check_filename(self):
         if self.archivo:
             if not self.filename:
@@ -75,9 +74,8 @@ class articulo(models.Model):
                     raise ValidationError("El artículo de subirse en formato PDF")
 
 
-    @api.constrains('filenameDiff')
-    @api.one
-    def _check_filename(self):
+    @api.constrains('filenameDiff')   
+    def _check_filenameDiff(self):
         if self.archivo_diff:
             if not self.filenameDiff:
                 raise ValidationError("No hay artículo subido")
@@ -90,8 +88,7 @@ class articulo(models.Model):
 
     
     @api.constrains('filenameDiff_m')
-    @api.one
-    def _check_filename(self):
+    def _check_filenameDiff_m(self):
         if self.archivo_diff_m:
             if not self.filenameDiff_m:
                 raise ValidationError("No hay artículo subido")
