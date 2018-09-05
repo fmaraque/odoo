@@ -10,5 +10,5 @@ class seccion(models.Model):
     name = fields.Char('Nombre', size=128, required=True)
     descripcion = fields.Char('Descripción', size=128)
     max_articulos = fields.Integer('Número máximo de artículos por número', default =3)
-    editor_ids = fields.Many2many('res.users', string='Editors', domain="[('is_editor', '=', True)]")
+    editor_ids = fields.Many2many('res.users', string='Editores', domain="[('is_editor', '=', True)]")
     maquetador = fields.Many2one('res.users', string='Maquetador', domain="[('is_maquetador', '=', True)]")
